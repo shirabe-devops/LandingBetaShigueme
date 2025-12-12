@@ -1,0 +1,428 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { IconTrendingUp, IconCircleDollar, IconLayers, IconChart, IconChevronLeft, IconChevronRight, IconArrowRight, IconSearch } from './Icons';
+import { ServiceItem } from '../types';
+
+const services: ServiceItem[] = [
+  {
+    id: '1',
+    title: 'Adequação à Reforma',
+    description: 'Prepare-se para o IBS e CBS. Análise preditiva de impacto da unificação tributária no seu ecossistema financeiro.',
+    icon: <IconChart className="w-6 h-6 text-cyan-400" />,
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=800'
+  },
+  {
+    id: '2',
+    title: 'Recuperação de Créditos',
+    description: 'Algoritmos avançados para identificação e resgate de ativos fiscais ocultos antes da transição de modelo.',
+    icon: <IconCircleDollar className="w-6 h-6 text-cyan-400" />,
+    image: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=800'
+  },
+  {
+    id: '3',
+    title: 'BPO Financeiro 4.0',
+    description: 'Terceirização digital completa. Dashboards em tempo real e conformidade automatizada com as novas regras fiscais.',
+    icon: <IconLayers className="w-6 h-6 text-cyan-400" />,
+    image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800'
+  },
+  {
+    id: '4',
+    title: 'Planejamento Estratégico',
+    description: 'Navegação inteligente pelo período de transição (2026-2033). Otimização fiscal considerando o novo Imposto Seletivo.',
+    icon: <IconTrendingUp className="w-6 h-6 text-cyan-400" />,
+    image: 'https://images.unsplash.com/photo-1586486855514-8c633cc6fd38?auto=format&fit=crop&q=80&w=800'
+  }
+];
+
+export const Services: React.FC = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(3);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Duplicamos a lista para criar o efeito de loop infinito
+  const displayServices = [...services, ...services];
+
+  // Filtra serviços baseado na busca
+  const filteredServices = services.filter(service => 
+    service.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    service.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Responsive logic strict: 1 for mobile, 2 for tablet, 3 for desktop
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      if (width < 768) {
+        setItemsPerPage(1);
+      } else if (width < 1024) {
+        setItemsPerPage(2);
+      } else {
+        setItemsPerPage(3);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Lógica do Próximo Slide (Loop Infinito)
+  const nextSlide = useCallback(() => {
+    if (!isTransitioning || searchQuery) return; // Pausa carrossel se buscando
+    setCurrentIndex((prev) => prev + 1);
+  }, [isTransitioning, searchQuery]);
+
+  const prevSlide = () => {
+    if (currentIndex === 0) return;
+    setCurrentIndex((prev) => prev - 1);
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentIndex(index);
+  };
+
+  // Efeito de "Snap" (Pulo silencioso) para o loop infinito
+  useEffect(() => {
+    if (searchQuery) return; // Ignora se estiver buscando
+    
+    // Quando atingimos o índice que corresponde ao início do clone
+    if (currentIndex === services.length) {
+      const timeout = setTimeout(() => {
+        setIsTransitioning(false); // Desliga animação
+        setCurrentIndex(0); // Reseta para o 0 real
+      }, 700); // Tempo igual ao da transição CSS
+
+      return () => clearTimeout(timeout);
+    }
+  }, [currentIndex, searchQuery]);
+
+  // Religador da transição após o snap
+  useEffect(() => {
+    if (!isTransitioning) {
+      const timeout = setTimeout(() => {
+        setIsTransitioning(true);
+      }, 50);
+      return () => clearTimeout(timeout);
+    }
+  }, [isTransitioning]);
+
+  // Auto-play Logic
+  useEffect(() => {
+    if (isPaused || searchQuery) return;
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [isPaused, nextSlide, searchQuery]);
+
+  return (
+    <div id="services" className="bg-slate-950 py-24 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-900/20 rounded-full blur-[120px]"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-cyan-900/20 rounded-full blur-[120px]"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-6">
+          <div className="max-w-2xl">
+            <h2 className="text-cyan-400 font-semibold tracking-widest uppercase text-xs mb-3 flex items-center gap-2">
+              <span className="w-8 h-[1px] bg-cyan-400"></span>
+              Inovação Fiscal
+            </h2>
+            <h3 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+              Soluções do <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400">Futuro</span>
+            </h3>
+            <p className="text-slate-400 text-lg">
+              Tecnologia de ponta aplicada à inteligência tributária para navegar a nova era econômica.
+            </p>
+          </div>
+          
+          {/* Controls - Hide if searching */}
+          {!searchQuery && (
+            <div className="flex gap-3 hidden md:flex">
+              <button 
+                onClick={prevSlide}
+                className="p-3 rounded-full border border-slate-700 bg-slate-900/50 text-white hover:bg-cyan-500 hover:border-cyan-500 hover:text-white transition-all duration-300 backdrop-blur-sm group"
+                aria-label="Anterior"
+              >
+                <IconChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+              </button>
+              <button 
+                onClick={nextSlide}
+                className="p-3 rounded-full border border-slate-700 bg-slate-900/50 text-white hover:bg-cyan-500 hover:border-cyan-500 hover:text-white transition-all duration-300 backdrop-blur-sm group"
+                aria-label="Próximo"
+              >
+                <IconChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Search Bar */}
+        <div className="max-w-md mb-12 relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <IconSearch className="h-5 w-5 text-slate-500" />
+          </div>
+          <input
+            type="text"
+            className="block w-full pl-10 pr-3 py-3 border border-slate-700 rounded-lg leading-5 bg-slate-900/50 text-slate-300 placeholder-slate-500 focus:outline-none focus:bg-slate-900 focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm transition-colors backdrop-blur-sm"
+            placeholder="Buscar por serviços ou palavras-chave..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+
+        {/* Conditional Rendering: Search Results vs Carousel */}
+        {searchQuery ? (
+          // Search Results Grid
+          <div className="min-h-[400px]">
+            {filteredServices.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-[fadeIn_0.5s_ease-out]">
+                {filteredServices.map((service, index) => (
+                   <div key={`${service.id}-${index}`} className="group relative h-[400px] rounded-2xl overflow-hidden cursor-pointer shadow-xl shadow-black/50 border border-slate-800 hover:border-cyan-500/50 transition-all duration-500 hover:-translate-y-2">
+                    {/* Image Background */}
+                    <img 
+                      src={service.image} 
+                      alt={service.title} 
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-95"></div>
+                    
+                    {/* Content */}
+                    <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                      <div className="mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                        <div className="w-12 h-12 rounded-xl bg-slate-800/80 backdrop-blur-md border border-slate-700 flex items-center justify-center mb-4 group-hover:bg-cyan-500/20 group-hover:border-cyan-500/50 transition-colors">
+                          {service.icon}
+                        </div>
+                        <h4 className="text-xl font-bold text-white mb-2">{service.title}</h4>
+                        <p className="text-slate-400 text-sm leading-relaxed mb-4 line-clamp-4 group-hover:text-slate-300">
+                          {service.description}
+                        </p>
+                        
+                        <a href="#contact" className="inline-flex items-center text-cyan-400 font-semibold text-xs uppercase tracking-wider group-hover:text-cyan-300 bg-cyan-950/30 py-2 px-3 rounded-full border border-cyan-900/50 hover:bg-cyan-900/50 transition-colors">
+                          Explorar <IconArrowRight className="ml-2 w-3 h-3 transition-transform group-hover:translate-x-2" />
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-64 text-slate-500">
+                <IconSearch className="w-12 h-12 mb-4 opacity-20" />
+                <p className="text-lg">Nenhum serviço encontrado para "{searchQuery}"</p>
+                <button 
+                  onClick={() => setSearchQuery('')}
+                  className="mt-4 text-cyan-400 hover:text-cyan-300 text-sm font-semibold"
+                >
+                  Limpar busca
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          // Default Carousel View
+          <>
+            <div 
+              className="overflow-hidden py-4 w-full"
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+              onTouchStart={() => setIsPaused(true)}
+              onTouchEnd={() => setIsPaused(false)}
+            >
+              <div 
+                className="flex w-full"
+                style={{ 
+                  transform: `translateX(-${currentIndex * (100 / itemsPerPage)}%)`,
+                  transition: isTransitioning ? 'transform 700ms cubic-bezier(0.25, 1, 0.5, 1)' : 'none'
+                }}
+              >
+                {displayServices.map((service, index) => (
+                  <div 
+                    key={`${service.id}-${index}`} 
+                    className="flex-shrink-0 px-2 md:px-4 box-border"
+                    style={{ width: `${100 / itemsPerPage}%` }}
+                  >
+                    <div className="group relative h-[500px] md:h-[520px] rounded-2xl overflow-hidden cursor-pointer shadow-xl shadow-black/50 border border-slate-800 hover:border-cyan-500/50 transition-all duration-500 hover:-translate-y-2">
+                      {/* Image Background */}
+                      <img 
+                        src={service.image} 
+                        alt={service.title} 
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-95"></div>
+                      
+                      {/* Content */}
+                      <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-end">
+                        <div className="mb-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                          <div className="w-14 h-14 rounded-xl bg-slate-800/80 backdrop-blur-md border border-slate-700 flex items-center justify-center mb-5 group-hover:bg-cyan-500/20 group-hover:border-cyan-500/50 transition-colors">
+                            {service.icon}
+                          </div>
+                          <h4 className="text-2xl md:text-3xl font-bold text-white mb-3">{service.title}</h4>
+                          <p className="text-slate-400 text-base md:text-lg leading-relaxed mb-6 line-clamp-4 group-hover:text-slate-300">
+                            {service.description}
+                          </p>
+                          
+                          <a href="#contact" className="inline-flex items-center text-cyan-400 font-semibold text-sm uppercase tracking-wider group-hover:text-cyan-300 bg-cyan-950/30 py-2 px-4 rounded-full border border-cyan-900/50 hover:bg-cyan-900/50 transition-colors">
+                            Explorar Solução <IconArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-2" />
+                          </a>
+                        </div>
+                      </div>
+                      
+                      {/* Hover Glow Effect */}
+                      <div className="absolute inset-0 border-2 border-cyan-500/0 rounded-2xl group-hover:border-cyan-500/20 pointer-events-none transition-all duration-200"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Progress Bar / Dots */}
+            <div className="flex justify-center mt-10 gap-3">
+                {services.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => goToSlide(idx)}
+                    className={`h-1.5 transition-all duration-500 rounded-full ${
+                      (currentIndex % services.length) === idx 
+                        ? 'w-10 bg-cyan-500' 
+                        : 'w-3 bg-slate-700 hover:bg-slate-600'
+                    }`}
+                    aria-label={`Ir para o slide ${idx + 1}`}
+                  />
+                ))}
+            </div>
+          </>
+        )}
+
+        {/* --- CHART SECTION (Dark Mode Integration) --- */}
+        <div className="mt-32 pt-16 border-t border-slate-800/50">
+          <div className="lg:grid lg:grid-cols-2 lg:gap-16 items-center">
+            
+            {/* Context Text */}
+            <div className="mb-12 lg:mb-0">
+               <h3 className="text-2xl md:text-3xl font-bold text-white mb-6">
+                 Entenda o Impacto da <span className="text-cyan-400">Reforma Tributária</span>
+               </h3>
+               <p className="text-slate-400 text-lg mb-6 leading-relaxed">
+                  A transição para o modelo de IVA Dual (IBS e CBS) simplifica o sistema, mas exige adaptação profunda. Nosso gráfico detalha a composição da nova estrutura tributária, onde quase metade das normas se refere a regimes específicos.
+               </p>
+               <ul className="space-y-4 text-slate-300">
+                 <li className="flex items-start">
+                   <span className="w-2 h-2 mt-2 bg-red-500 rounded-full mr-3 flex-shrink-0"></span>
+                   <span><strong>Regimes Específicos (48%):</strong> Setores com tratamento diferenciado exigem atenção redobrada.</span>
+                 </li>
+                 <li className="flex items-start">
+                   <span className="w-2 h-2 mt-2 bg-green-500 rounded-full mr-3 flex-shrink-0"></span>
+                   <span><strong>Normas Gerais (24%):</strong> A base do novo sistema unificado IBS e CBS.</span>
+                 </li>
+                 <li className="flex items-start">
+                   <span className="w-2 h-2 mt-2 bg-yellow-500 rounded-full mr-3 flex-shrink-0"></span>
+                   <span><strong>Transição (13%):</strong> Período crucial de adaptação até 2033.</span>
+                 </li>
+               </ul>
+            </div>
+
+            {/* Chart - Adapted for Dark Theme */}
+            <div className="relative">
+              <div className="bg-slate-900/50 rounded-3xl p-6 md:p-10 border border-slate-800 shadow-2xl relative min-h-[400px] flex items-center justify-center backdrop-blur-sm">
+                
+                <div className="absolute top-0 left-0 -ml-4 -mt-4 w-24 h-24 bg-blue-500/10 rounded-full z-0 blur-xl"></div>
+                <div className="absolute bottom-0 right-0 -mr-4 -mb-4 w-32 h-32 bg-cyan-500/10 rounded-full z-0 blur-xl"></div>
+
+                <div className="relative z-10 w-full max-w-[450px] aspect-square">
+                  <h4 className="absolute top-0 left-0 text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 z-20">Estrutura da Reforma</h4>
+
+                  <div className="relative w-full h-full flex items-center justify-center">
+                    
+                    {/* Circle */}
+                    <div className="w-[180px] h-[180px] sm:w-[220px] sm:h-[220px] rounded-full shadow-[0_0_30px_rgba(0,0,0,0.5)] border-4 border-slate-900 relative z-10"
+                         style={{
+                           background: `conic-gradient(
+                             #3b82f6 0% 9%, 
+                             #22c55e 9% 33%, 
+                             #eab308 33% 46%, 
+                             #a855f7 46% 52%, 
+                             #ef4444 52% 100%
+                           )`
+                         }}
+                    ></div>
+
+                    {/* Labels - Dark Mode Styled */}
+                    <div className="absolute inset-0 hidden md:block pointer-events-none">
+                      
+                      {/* Revogações */}
+                      <div className="absolute top-[5%] right-[30%] flex flex-col items-center transform translate-x-1/2">
+                        <div className="bg-slate-800 px-3 py-2 rounded-lg shadow-lg border border-slate-700 border-l-4 border-l-blue-500 mb-1">
+                          <p className="text-[10px] font-bold text-slate-300 leading-tight">Revogações e<br/>alterações</p>
+                          <p className="text-xs font-bold text-blue-400">9%</p>
+                        </div>
+                        <div className="h-10 w-px bg-slate-600"></div>
+                      </div>
+
+                      {/* Normas */}
+                      <div className="absolute top-[25%] -right-[2%] flex items-center">
+                        <div className="w-10 h-px bg-slate-600"></div>
+                        <div className="bg-slate-800 px-3 py-2 rounded-lg shadow-lg border border-slate-700 border-l-4 border-l-green-500 ml-1">
+                          <p className="text-[10px] font-bold text-slate-300 leading-tight">Normas gerais<br/>IBS e CBS</p>
+                          <p className="text-xs font-bold text-green-400">24%</p>
+                        </div>
+                      </div>
+
+                      {/* Transição */}
+                      <div className="absolute bottom-[25%] -right-[2%] flex items-center">
+                        <div className="w-8 h-px bg-slate-600"></div>
+                        <div className="bg-slate-800 px-3 py-2 rounded-lg shadow-lg border border-slate-700 border-l-4 border-l-yellow-500 ml-1">
+                          <p className="text-[10px] font-bold text-slate-300 leading-tight">Transição para o<br/>novo modelo</p>
+                          <p className="text-xs font-bold text-yellow-500">13%</p>
+                        </div>
+                      </div>
+
+                      {/* Seletivo */}
+                      <div className="absolute bottom-[2%] right-[35%] flex flex-col items-center">
+                        <div className="h-8 w-px bg-slate-600"></div>
+                        <div className="bg-slate-800 px-3 py-2 rounded-lg shadow-lg border border-slate-700 border-l-4 border-l-purple-500 mt-1">
+                          <p className="text-[10px] font-bold text-slate-300 leading-tight">Imposto<br/>Seletivo</p>
+                          <p className="text-xs font-bold text-purple-400">6%</p>
+                        </div>
+                      </div>
+
+                      {/* Regimes */}
+                      <div className="absolute top-[40%] -left-[10%] flex items-center justify-end w-[140px]">
+                        <div className="bg-slate-800 px-3 py-2 rounded-lg shadow-lg border border-slate-700 border-l-4 border-l-red-500 mr-1 text-right">
+                          <p className="text-[10px] font-bold text-slate-300 leading-tight">Regimes específicos e<br/>diferenciados etc.</p>
+                          <p className="text-xs font-bold text-red-500">48%</p>
+                        </div>
+                        <div className="w-6 h-px bg-slate-600"></div>
+                      </div>
+
+                    </div>
+
+                  </div>
+                </div>
+                
+                {/* Mobile Legend - Dark Mode */}
+                <div className="md:hidden absolute bottom-6 left-6 right-6 grid grid-cols-2 gap-2 text-[10px] text-slate-400">
+                  <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-red-500"></div><span>Regimes (48%)</span></div>
+                  <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-green-500"></div><span>Normas (24%)</span></div>
+                  <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-yellow-500"></div><span>Transição (13%)</span></div>
+                  <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500"></div><span>Revogações (9%)</span></div>
+                  <div className="flex items-center gap-1.5 col-span-2 justify-center"><div className="w-2 h-2 rounded-full bg-purple-500"></div><span>Seletivo (6%)</span></div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+};
