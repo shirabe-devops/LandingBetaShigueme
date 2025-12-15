@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { IconMessageCircle, IconX, IconSend, IconShield, IconUser } from './Icons';
+import { IconMessageCircle, IconX, IconSend, IconShield } from './Icons';
 import { ChatMessage, ChatOption, UserData } from '../types';
 
 // CONFIGURAÇÃO DA URL DO N8N
-// Substitua esta URL pela URL de Produção do seu Webhook no n8n
-// Dica: Para maior segurança, considere usar variáveis de ambiente (import.meta.env.VITE_N8N_URL)
 const N8N_WEBHOOK_URL = 'https://n8nwebhook.shirabe.com.br/webhook/lpshigueme'; 
 
 // Define os passos do fluxo do chat
@@ -45,11 +43,16 @@ export const AIAssistant: React.FC = () => {
     const handleOpenChat = () => {
       setIsOpen(true);
       setShowNotification(false);
+      // Se for a primeira vez abrindo via clique externo e o chat estiver vazio/intro, inicia conversa
+      if (!hasOpened) {
+          setHasOpened(true);
+          startConversation();
+      }
     };
 
     window.addEventListener('open-chat', handleOpenChat);
     return () => window.removeEventListener('open-chat', handleOpenChat);
-  }, []);
+  }, [hasOpened]);
 
   // Notificação inicial (balãozinho)
   useEffect(() => {
@@ -68,7 +71,7 @@ export const AIAssistant: React.FC = () => {
     }
   }, [messages, isOpen, isTyping]);
 
-  // Inicializa o chat quando aberto pela primeira vez
+  // Inicializa o chat quando aberto pela primeira vez via botão flutuante
   useEffect(() => {
     if (isOpen && !hasOpened) {
       setHasOpened(true);
@@ -85,8 +88,9 @@ export const AIAssistant: React.FC = () => {
   }, [isTyping, currentStep, isOpen]);
 
   const startConversation = () => {
+    setMessages([]); // Limpa mensagens anteriores se houver
     addBotMessage("Olá! Sou a IA da Shigueme. 🤖", 500);
-    addBotMessage("Posso fazer um diagnóstico rápido da sua empresa?", 1500, () => setCurrentStep('NAME'));
+    addBotMessage("Vou guiar seu diagnóstico tributário. Para começar, qual é o seu nome completo?", 1500, () => setCurrentStep('NAME'));
   };
 
   const addBotMessage = (text: string, delay: number = 0, callback?: () => void, options?: ChatOption[]) => {
@@ -140,7 +144,7 @@ export const AIAssistant: React.FC = () => {
 
       case 'COMPANY':
         setUserData(prev => ({ ...prev, company: value }));
-        addBotMessage("Qual seu e-mail corporativo?", 600, () => setCurrentStep('EMAIL'));
+        addBotMessage("Perfeito. Agora, qual é o seu melhor e-mail corporativo?", 600, () => setCurrentStep('EMAIL'));
         break;
 
       case 'EMAIL':
@@ -150,7 +154,7 @@ export const AIAssistant: React.FC = () => {
             return;
         }
         setUserData(prev => ({ ...prev, email: value }));
-        addBotMessage("Qual seu WhatsApp (com DDD)?", 600, () => setCurrentStep('PHONE'));
+        addBotMessage("Anotado. Qual seu WhatsApp (com DDD)?", 600, () => setCurrentStep('PHONE'));
         break;
 
       case 'PHONE':
@@ -162,24 +166,26 @@ export const AIAssistant: React.FC = () => {
         setUserData(prev => ({ ...prev, phone: value }));
         
         const revenueOptions: ChatOption[] = [
-            { label: 'Até R$ 80k', value: 'ate_50k' },
-            { label: 'R$ 80k - 300k', value: '50k_300k' },
-            { label: 'R$ 300k - 1M', value: '300k_1m' },
-            { label: 'Acima de R$ 1M', value: 'acima_1m' },
+            { label: 'Até R$ 80k (MEI)', value: 'ate_50k' },
+            { label: 'R$ 80k - R$ 300k', value: '50k_300k' },
+            { label: 'R$ 300k - R$ 1M', value: '300k_1m' },
+            { label: 'R$ 1M - R$ 5M', value: '1m_5m' },
+            { label: 'Acima de R$ 5M', value: 'acima_5m' },
         ];
-        addBotMessage("Qual o faturamento mensal estimado?", 600, () => setCurrentStep('REVENUE'), revenueOptions);
+        addBotMessage("Qual o faturamento mensal estimado da empresa?", 600, () => setCurrentStep('REVENUE'), revenueOptions);
         break;
 
       case 'REVENUE':
         setUserData(prev => ({ ...prev, revenue: value }));
         
         const regimeOptions: ChatOption[] = [
-            { label: 'Simples', value: 'simples' },
-            { label: 'Presumido', value: 'presumido' },
+            { label: 'MEI', value: 'mei' },
+            { label: 'Simples Nacional', value: 'simples' },
+            { label: 'Lucro Presumido', value: 'presumido' },
             { label: 'Lucro Real', value: 'real' },
-            { label: 'Não sei', value: 'nao_sei' },
+            { label: 'Não sei / Abertura', value: 'nao_sei' },
         ];
-        addBotMessage("Qual o Regime Tributário?", 600, () => setCurrentStep('REGIME'), regimeOptions);
+        addBotMessage("Qual o Regime Tributário atual?", 600, () => setCurrentStep('REGIME'), regimeOptions);
         break;
 
       case 'REGIME':
@@ -187,11 +193,13 @@ export const AIAssistant: React.FC = () => {
         
         const sectorOptions: ChatOption[] = [
             { label: 'Indústria', value: 'industria' },
-            { label: 'Comércio', value: 'comercio' },
+            { label: 'Comércio/Varejo', value: 'comercio' },
             { label: 'Serviços', value: 'servicos' },
+            { label: 'Agro', value: 'agro' },
+            { label: 'Saúde', value: 'saude' },
             { label: 'Outro', value: 'outro' },
         ];
-        addBotMessage("Qual seu setor?", 600, () => setCurrentStep('SECTOR'), sectorOptions);
+        addBotMessage("Qual é o setor de atuação principal?", 600, () => setCurrentStep('SECTOR'), sectorOptions);
         break;
 
       case 'SECTOR':
@@ -199,16 +207,18 @@ export const AIAssistant: React.FC = () => {
 
         const needOptions: ChatOption[] = [
             { label: 'Reduzir Impostos', value: 'reduzir_carga' },
-            { label: 'Dívidas', value: 'dividas' },
+            { label: 'Resolver Dívidas', value: 'dividas' },
             { label: 'Recup. Créditos', value: 'recuperacao_credito' },
-            { label: 'BPO', value: 'bpo' },
+            { label: 'BPO Financeiro', value: 'bpo' },
+            { label: 'Reforma Tributária', value: 'reforma_tributaria' },
+            { label: 'Outro', value: 'outro' },
         ];
-        addBotMessage("Qual seu maior objetivo?", 600, () => setCurrentStep('MAIN_NEED'), needOptions);
+        addBotMessage("Qual seu maior desafio ou objetivo hoje?", 600, () => setCurrentStep('MAIN_NEED'), needOptions);
         break;
 
       case 'MAIN_NEED':
         setUserData(prev => ({ ...prev, mainNeed: value }));
-        addBotMessage("Descreva brevemente sua necessidade.", 600, () => setCurrentStep('MESSAGE'));
+        addBotMessage("Para finalizar, descreva brevemente como podemos ajudar.", 600, () => setCurrentStep('MESSAGE'));
         break;
 
       case 'MESSAGE':
@@ -226,18 +236,9 @@ export const AIAssistant: React.FC = () => {
   };
 
   const submitToN8N = async (data: UserData) => {
-    addBotMessage("Enviando seus dados...", 500);
-
-    // Validação básica da URL
-    if (N8N_WEBHOOK_URL.includes('seu-n8n.com')) {
-        console.error("URL do N8N não configurada.");
-        setCurrentStep('ERROR');
-        addBotMessage("Erro de configuração no servidor (URL inválida).", 2000);
-        return;
-    }
+    addBotMessage("Analisando seus dados e enviando para nossa equipe...", 500);
 
     try {
-        // Envio direto via fetch para o N8N
         const response = await fetch(N8N_WEBHOOK_URL, {
             method: 'POST',
             headers: { 
@@ -247,11 +248,10 @@ export const AIAssistant: React.FC = () => {
             body: JSON.stringify(data),
         });
 
-        // N8N retorna 200 OK quando o webhook é recebido com sucesso
         if (response.ok) {
             setCurrentStep('SUCCESS');
-            addBotMessage("✅ Recebido! Nossos especialistas receberam seu diagnóstico.", 1000);
-            addBotMessage("Entraremos em contato em breve pelo WhatsApp.", 2000);
+            addBotMessage("✅ Tudo certo! Recebemos sua solicitação.", 1000);
+            addBotMessage("Nossos especialistas em inteligência tributária entrarão em contato em breve pelo WhatsApp.", 2000);
         } else {
             throw new Error(`Erro ${response.status}: ${response.statusText}`);
         }
@@ -260,8 +260,7 @@ export const AIAssistant: React.FC = () => {
         console.error("Erro envio chat:", error);
         setCurrentStep('ERROR');
         addBotMessage("Ops! Houve um erro de conexão.", 1000);
-        // Mensagem amigável sugerindo outra forma de contato
-        addBotMessage("Por favor, tente novamente ou chame no WhatsApp.", 2000);
+        addBotMessage("Por favor, tente nos chamar diretamente no WhatsApp pelo botão no rodapé.", 2000);
     }
   };
 

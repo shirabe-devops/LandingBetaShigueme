@@ -6,6 +6,10 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ onOpenPrivacy }) => {
+  const openChat = () => {
+    window.dispatchEvent(new CustomEvent('open-chat'));
+  };
+
   return (
     <footer className="bg-slate-950 text-slate-400 py-12 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -33,7 +37,11 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPrivacy }) => {
             <h4 className="text-white font-bold mb-4 uppercase text-sm tracking-wider">Empresa</h4>
             <ul className="space-y-2 text-sm">
               <li><a href="#about" className="hover:text-blue-400 transition-colors">Sobre Nós</a></li>
-              <li><a href="#contact" className="hover:text-blue-400 transition-colors">Carreiras</a></li>
+              <li>
+                <button onClick={openChat} className="hover:text-blue-400 transition-colors text-left">
+                  Carreiras
+                </button>
+              </li>
               <li>
                 <button onClick={onOpenPrivacy} className="hover:text-blue-400 transition-colors text-left">
                   Política de Privacidade
