@@ -14,7 +14,7 @@
 // =======================================================================
 
 // [IMPORTANTE] COLOQUE AQUI A URL DO SEU WEBHOOK DO N8N (Production URL)
-$n8nWebhookUrl = 'https://n8nwebhook.shirabe.com.br/webhook/lpshigueme';
+$n8nWebhookUrl = 'https://n8n.shirabe.com.br/webhook-test/lpshigueme';
 
 // =======================================================================
 // LÓGICA DO PROXY
