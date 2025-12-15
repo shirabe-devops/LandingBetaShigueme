@@ -2,6 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { IconMessageCircle, IconX, IconSend, IconShield, IconUser } from './Icons';
 import { ChatMessage, ChatOption, UserData } from '../types';
 
+// CONFIGURAÇÃO DA URL DO N8N
+// Substitua esta URL pela URL de Produção do seu Webhook no n8n
+// Dica: Para maior segurança, considere usar variáveis de ambiente (import.meta.env.VITE_N8N_URL)
+const N8N_WEBHOOK_URL = 'https://n8nwebhook.shirabe.com.br/webhook/lpshigueme'; 
+
 // Define os passos do fluxo do chat
 type ChatStep = 
   | 'INTRO' 
@@ -223,31 +228,39 @@ export const AIAssistant: React.FC = () => {
   const submitToN8N = async (data: UserData) => {
     addBotMessage("Enviando seus dados...", 500);
 
+    // Validação básica da URL
+    if (N8N_WEBHOOK_URL.includes('seu-n8n.com')) {
+        console.error("URL do N8N não configurada.");
+        setCurrentStep('ERROR');
+        addBotMessage("Erro de configuração no servidor (URL inválida).", 2000);
+        return;
+    }
+
     try {
-        // Envia para o proxy PHP que deve estar na pasta public/api do build
-        // Nota: Em ambiente de desenvolvimento local (Vite), o PHP não é processado.
-        // Você precisa testar isso no servidor Hostinger ou configurar um proxy local.
-        const response = await fetch('/n8n-proxy.php', {
+        // Envio direto via fetch para o N8N
+        const response = await fetch(N8N_WEBHOOK_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
             body: JSON.stringify(data),
         });
 
-        // Tenta ler o JSON de resposta
-        const result = await response.json();
-
-        if (!response.ok) {
-            throw new Error(result.error || 'Erro na conexão com o servidor');
+        // N8N retorna 200 OK quando o webhook é recebido com sucesso
+        if (response.ok) {
+            setCurrentStep('SUCCESS');
+            addBotMessage("✅ Recebido! Nossos especialistas receberam seu diagnóstico.", 1000);
+            addBotMessage("Entraremos em contato em breve pelo WhatsApp.", 2000);
+        } else {
+            throw new Error(`Erro ${response.status}: ${response.statusText}`);
         }
-
-        setCurrentStep('SUCCESS');
-        addBotMessage("✅ Recebido! Nossos especialistas receberam seu diagnóstico.", 1000);
-        addBotMessage("Entraremos em contato em breve pelo WhatsApp.", 2000);
         
     } catch (error) {
         console.error("Erro envio chat:", error);
         setCurrentStep('ERROR');
         addBotMessage("Ops! Houve um erro de conexão.", 1000);
+        // Mensagem amigável sugerindo outra forma de contato
         addBotMessage("Por favor, tente novamente ou chame no WhatsApp.", 2000);
     }
   };
