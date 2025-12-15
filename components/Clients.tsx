@@ -10,6 +10,15 @@ const clients = [
   { name: 'Uber', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png' },
   { name: 'Samsung', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fe/Samsung_Galaxy_A8_2018_logo.png' },
   { name: 'Coca-Cola', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Coca-Cola_logo.svg' },
+  { name: 'Amidos Crestani', logo: 'https://srv1781-files.hstgr.io/fe7fcdce51a60fef/files/public_html/clientes/amidoscrestani.jpeg' },
+  { name: 'Amidos Nova Era', logo: 'https://srv1781-files.hstgr.io/fe7fcdce51a60fef/files/public_html/clientes/amidosnovaera.jpeg' },
+  { name: 'Amidos Tia Le', logo: 'https://srv1781-files.hstgr.io/fe7fcdce51a60fef/files/public_html/clientes/amidostiale.jpeg' },
+  { name: 'Auris Ap Auditivos', logo: 'https://srv1781-files.hstgr.io/fe7fcdce51a60fef/files/public_html/clientes/aurisaparelhosauditivos.jpeg' },
+  { name: 'Goma Chico', logo: 'https://srv1781-files.hstgr.io/fe7fcdce51a60fef/files/public_html/clientes/gomachico.jpeg' },
+  { name: 'Samak Pescados', logo: 'https://srv1781-files.hstgr.io/fe7fcdce51a60fef/files/public_html/clientes/samakpescados.jpeg' },
+  { name: 'Vo Corinto', logo: 'https://srv1781-files.hstgr.io/fe7fcdce51a60fef/files/public_html/clientes/vocorinto.jpeg' },
+  //{ name: 'Coca-Cola', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Coca-Cola_logo.svg' },
+  //{ name: 'Coca-Cola', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Coca-Cola_logo.svg' },
 ];
 
 export const Clients: React.FC = () => {
