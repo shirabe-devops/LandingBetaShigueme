@@ -3,7 +3,7 @@ import { IconMessageCircle, IconX, IconSend, IconShield } from './Icons';
 import { ChatMessage, ChatOption, UserData } from '../types';
 
 // CONFIGURAÇÃO DA URL DO N8N
-const N8N_WEBHOOK_URL = 'https://n8n.shirabe.com.br/webhook-test/lpshigueme'; 
+const N8N_WEBHOOK_URL = 'https://n8nwebhook.shirabe.com.br/webhook/lpshigueme'; 
 
 // Define os passos do fluxo do chat
 type ChatStep = 
@@ -89,7 +89,7 @@ export const AIAssistant: React.FC = () => {
 
   const startConversation = () => {
     setMessages([]); // Limpa mensagens anteriores se houver
-    addBotMessage("Olá! Sou a IA da Shigueme. 🤖", 500);
+    addBotMessage("Olá! Sou o seu assistente virtual. 🤖", 500);
     addBotMessage("Vou guiar seu diagnóstico tributário. Para começar, qual é o seu nome completo?", 1500, () => setCurrentStep('NAME'));
   };
 
@@ -139,7 +139,7 @@ export const AIAssistant: React.FC = () => {
             return;
         }
         setUserData(prev => ({ ...prev, name: value }));
-        addBotMessage(`Prazer, ${value.split(' ')[0]}! Qual o nome da empresa?`, 600, () => setCurrentStep('COMPANY'));
+        addBotMessage(`Prazer, ${value.split(' ')[0]}! Qual o nome da sua empresa?`, 600, () => setCurrentStep('COMPANY'));
         break;
 
       case 'COMPANY':
@@ -194,6 +194,7 @@ export const AIAssistant: React.FC = () => {
         const sectorOptions: ChatOption[] = [
             { label: 'Indústria', value: 'industria' },
             { label: 'Comércio/Varejo', value: 'comercio' },
+            { label: 'Atacado', value: 'atacado'},
             { label: 'Serviços', value: 'servicos' },
             { label: 'Agro', value: 'agro' },
             { label: 'Saúde', value: 'saude' },
