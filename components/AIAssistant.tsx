@@ -33,19 +33,6 @@ type ChatStep =
   | 'SUCCESS' 
   | 'ERROR';
 
-// Interface para Cidades do IBGE
-interface IBGECity {
-  id: number;
-  nome: string;
-  microrregiao: {
-    mesorregiao: {
-      UF: {
-        sigla: string;
-      }
-    }
-  }
-}
-
 export const AIAssistant: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [hasOpened, setHasOpened] = useState(false);
@@ -54,10 +41,6 @@ export const AIAssistant: React.FC = () => {
   const [userInput, setUserInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
-  
-  // Estado para armazenar cidades carregadas do IBGE
-  const [brazilianCities, setBrazilianCities] = useState<string[]>([]);
-  const [isCitiesLoaded, setIsCitiesLoaded] = useState(false);
   
   const [userData, setUserData] = useState<UserData>({
     documentType: '',
@@ -76,27 +59,6 @@ export const AIAssistant: React.FC = () => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Carrega cidades do IBGE ao iniciar
-  useEffect(() => {
-    const fetchCities = async () => {
-      try {
-        const response = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/municipios');
-        const data: IBGECity[] = await response.json();
-        // Formata para "Nome da Cidade - UF"
-        const formattedCities = data.map(city => 
-            `${city.nome} - ${city.microrregiao.mesorregiao.UF.sigla}`
-        ).sort();
-        setBrazilianCities(formattedCities);
-        setIsCitiesLoaded(true);
-      } catch (error) {
-        console.error("Erro ao carregar cidades do IBGE", error);
-        // Fallback para não quebrar a aplicação
-        setIsCitiesLoaded(true); 
-      }
-    };
-    fetchCities();
-  }, []);
 
   // Listeners e Efeitos de UI (Manter igual)
   useEffect(() => {
@@ -144,7 +106,7 @@ export const AIAssistant: React.FC = () => {
   // INÍCIO DA CONVERSA
   const startConversation = () => {
     setMessages([]);
-    addBotMessage("Olá! Sou a IA da Shigueme. 🤖", 500);
+    addBotMessage("Olá! Sou o seu assistente virtual. 🤖", 500);
     addBotMessage("Para iniciarmos o diagnóstico tributário, preciso identificar você.", 1500);
     
     const docOptions: ChatOption[] = [
@@ -256,28 +218,13 @@ export const AIAssistant: React.FC = () => {
         break;
 
       case 'CITY':
-        // Busca inteligente na lista carregada do IBGE
-        // Normaliza a entrada do usuário para busca (sem acentos, lowercase)
-        const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-        const search = normalize(cleanValue);
-        
-        const foundCity = brazilianCities.find(c => normalize(c) === search); // Busca exata
-        const partialCity = !foundCity ? brazilianCities.find(c => normalize(c).includes(search)) : null; // Busca parcial
-
-        if (isCitiesLoaded && brazilianCities.length > 0 && !foundCity && !partialCity) {
-            addBotMessage("Hmm, não encontrei essa cidade na nossa base oficial.", 500);
-            addBotMessage("Tente digitar novamente no formato 'Cidade - UF' (Ex: São Paulo - SP).", 1500);
-            return;
+        if (cleanValue.length < 2) {
+             addBotMessage("Por favor, digite o nome da cidade.", 500);
+             return;
         }
 
-        const cityToSave = foundCity || partialCity || cleanValue; // Usa a do IBGE se achou, senão o input
-        setUserData(prev => ({ ...prev, city: cityToSave }));
-        
-        if (foundCity || partialCity) {
-            addBotMessage(`Certo, ${cityToSave}.`, 500);
-        } else {
-            addBotMessage(`Entendido.`, 500);
-        }
+        setUserData(prev => ({ ...prev, city: cleanValue }));
+        addBotMessage(`Certo.`, 500);
 
         const revenueOptions: ChatOption[] = [
             { label: 'Até R$ 80k (MEI)', value: 'ate_50k' },
