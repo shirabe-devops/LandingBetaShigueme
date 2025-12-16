@@ -13,13 +13,13 @@ const clients = [
   { name: 'Samsung', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fe/Samsung_Galaxy_A8_2018_logo.png' },
   { name: 'Coca-Cola', logo: 'https://upload.wikimedia.org/wikipedia/commons/c/ce/Coca-Cola_logo.svg' },
   // Clientes personalizados (Se a imagem falhar, o nome será exibido)
-  { name: 'Amidos Crestani', logo: 'https://srv1781-files.hstgr.io/fe7fcdce51a60fef/files/public_html/clientes/amidoscrestani.jpeg' },
+  { name: 'Amidos Crestani', logo: './clientes/amidoscrestani.png' },
   { name: 'Amidos Nova Era', logo: 'https://srv1781-files.hstgr.io/fe7fcdce51a60fef/files/public_html/clientes/amidosnovaera.jpeg' },
   { name: 'Amidos Tia Lê', logo: 'https://srv1781-files.hstgr.io/fe7fcdce51a60fef/files/public_html/clientes/amidostiale.jpeg' },
-  { name: 'Auris Ap. Auditivos', logo: 'https://srv1781-files.hstgr.io/fe7fcdce51a60fef/files/public_html/clientes/aurisaparelhosauditivos.jpeg' },
+  { name: 'Auris Ap. Auditivos', logo: 'https://res.cloudinary.com/dw9ohxxgw/image/upload/v1765895132/aurisaparelhosauditivos_b7j5sd.jpg' },
   { name: 'Goma Chico', logo: 'https://srv1781-files.hstgr.io/fe7fcdce51a60fef/files/public_html/clientes/gomachico.jpeg' },
-  { name: 'Samak Pescados', logo: 'https://srv1781-files.hstgr.io/fe7fcdce51a60fef/files/public_html/clientes/samakpescados.jpeg' },
-  { name: 'Vó Corinto', logo: 'https://srv1781-files.hstgr.io/fe7fcdce51a60fef/files/public_html/clientes/vocorinto.jpeg' },
+  { name: 'Samak Pescados', logo: 'https://res.cloudinary.com/dw9ohxxgw/image/upload/v1765896876/Samak_Pescados_Logo_HQ_blps9g.png' },
+  { name: 'Vó Corinto', logo: '/clientes/vocorinto.png' },
 ];
 
 const ClientLogo = ({ name, logo }: { name: string; logo: string }) => {
