@@ -39,7 +39,7 @@ const ClientLogo = ({ name, logo }: { name: string; logo: string }) => {
       transition-all duration-300      /* Animação de 300ms para todas as mudanças (cor, tamanho, opacidade) */
       
       /* EFEITO DE ZOOM */
-      hover:scale-110                  /* Aumenta o tamanho em 10% ao passar o mouse */
+      hover:scale-130                  /* Aumenta o tamanho em 10% ao passar o mouse */
       
       /* ALTURA DO CONTAINER (Responsivo) */
       h-32                             /* Altura em celulares: 128px (8rem) */
@@ -105,12 +105,12 @@ export const Clients: React.FC = () => {
           grid                         /* Ativa o sistema de Grid */
           
           /* COLUNAS RESPONSIVAS (Quantos logos por linha) */
-          grid-cols-2                  /* Mobile: 2 colunas */
+          grid-cols-3                  /* Mobile: 2 colunas */
           md:grid-cols-4               /* Tablet/Laptop pequeno: 4 colunas */
           lg:grid-cols-5               /* Desktop grande: 5 colunas */
           
           /* ESPAÇAMENTO ENTRE OS LOGOS */
-          gap-12                       /* Distância entre colunas e linhas: 48px (Aumente ou diminua aqui) */
+          gap-10                       /* Distância entre colunas e linhas: 48px (Aumente ou diminua aqui) */
           
           /* ALINHAMENTO GERAL */
           items-center                 /* Alinha verticalmente no centro */
