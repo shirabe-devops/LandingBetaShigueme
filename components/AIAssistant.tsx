@@ -62,7 +62,17 @@ export const AIAssistant: React.FC = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // EFEITO PARA DETECTAR O TECLADO MOBILE
+  // FUNÇÃO DE AUTO-SCROLL REFORÇADA
+  const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
+    if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({ 
+            behavior, 
+            block: 'end' 
+        });
+    }
+  };
+
+  // Efeito para detectar teclado e ajustar viewport
   useEffect(() => {
     if (!window.visualViewport) return;
 
@@ -71,9 +81,9 @@ export const AIAssistant: React.FC = () => {
         const offset = window.innerHeight - window.visualViewport.height;
         setKeyboardOffset(offset > 0 ? offset : 0);
         
-        // Se o teclado abrir, forçamos um scroll para o fim
         if (offset > 0) {
-            setTimeout(scrollToBottom, 100);
+            // Scroll imediato quando o teclado abre
+            setTimeout(() => scrollToBottom('auto'), 50);
         }
       }
     };
@@ -82,22 +92,14 @@ export const AIAssistant: React.FC = () => {
     return () => window.visualViewport?.removeEventListener('resize', handleResize);
   }, []);
 
-  // FUNÇÃO DE AUTO-SCROLL
-  const scrollToBottom = () => {
-    if (messagesEndRef.current) {
-        messagesEndRef.current.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'end' 
-        });
-    }
-  };
-
-  // Scroll sempre que as mensagens mudam ou o bot para de digitar
+  // Scroll automático quando mensagens mudam, bot digita ou para de digitar
   useEffect(() => {
     if (isOpen) {
-      scrollToBottom();
+      // Pequeno delay para garantir que o DOM (especialmente os botões) já foi renderizado
+      const timer = setTimeout(() => scrollToBottom(), 100);
+      return () => clearTimeout(timer);
     }
-  }, [messages, isOpen, isTyping]);
+  }, [messages, isOpen, isTyping, currentStep]);
 
   useEffect(() => {
     const handleOpenChat = () => {
@@ -191,7 +193,7 @@ export const AIAssistant: React.FC = () => {
     switch (currentStep) {
       case 'DOC_TYPE':
         if (value === 'CPF' || value === 'CNPJ') {
-            setUserData(prev => ({ ...prev, documentType: value }));
+            setUserData(prev => ({ ...prev, documentType: value as any }));
             addBotMessage(`Perfeito. Por favor, digite o número do ${value}.`, 600, () => setCurrentStep('DOC_VALUE'));
         } else {
             addBotMessage("Por favor, selecione uma das opções abaixo.", 500);
@@ -360,7 +362,7 @@ export const AIAssistant: React.FC = () => {
     const lastMessage = messages[messages.length - 1];
     if (lastMessage?.role === 'bot' && lastMessage?.options && !isTyping && currentStep !== 'SUBMITTING' && currentStep !== 'SUCCESS') {
         return (
-            <div className="flex flex-wrap gap-2 mt-2 px-1 pb-4">
+            <div className="flex flex-wrap gap-2 mt-2 px-1 pb-2">
                 {lastMessage.options.map((opt) => (
                     <button
                         key={opt.value}
@@ -472,12 +474,12 @@ export const AIAssistant: React.FC = () => {
                 </div>
             )}
 
+            {/* O Ref de scroll foi movido para envolver as opções e o final */}
             <div className="pl-2">
                 {renderOptions()}
             </div>
             
-            {/* O Ref de scroll deve ficar APÓS as opções para garantir que elas apareçam */}
-            <div ref={messagesEndRef} className="h-2" />
+            <div ref={messagesEndRef} className="h-4 w-full clear-both" />
          </div>
 
          {/* Input Area */}
