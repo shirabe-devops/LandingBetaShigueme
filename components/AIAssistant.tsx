@@ -14,16 +14,15 @@ import {
 // CONFIGURAÇÃO DA URL DO N8N
 const N8N_WEBHOOK_URL = 'https://n8nwebhook.shirabe.com.br/webhook/lpshigueme'; 
 
-// Define os passos do fluxo do chat
 type ChatStep = 
   | 'INTRO'
-  | 'DOC_TYPE'    // Novo: Escolha CPF ou CNPJ
-  | 'DOC_VALUE'   // Novo: Digitar número
+  | 'DOC_TYPE'
+  | 'DOC_VALUE'
   | 'NAME' 
   | 'COMPANY' 
   | 'EMAIL' 
   | 'PHONE' 
-  | 'CITY'        // Novo: Cidade
+  | 'CITY'
   | 'REVENUE' 
   | 'REGIME' 
   | 'SECTOR' 
@@ -41,6 +40,9 @@ export const AIAssistant: React.FC = () => {
   const [userInput, setUserInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
+  
+  // Estado para controlar a posição dinâmica com base no teclado (Mobile)
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
   
   const [userData, setUserData] = useState<UserData>({
     documentType: '',
@@ -60,7 +62,28 @@ export const AIAssistant: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Listeners e Efeitos de UI (Manter igual)
+  // EFEITO PARA DETECTAR O TECLADO MOBILE
+  useEffect(() => {
+    if (!window.visualViewport) return;
+
+    const handleResize = () => {
+      if (window.visualViewport) {
+        // Calcula a diferença entre a altura da janela e o que está visível
+        // Se a viewport visível for menor que a altura da janela, o teclado está aberto
+        const offset = window.innerHeight - window.visualViewport.height;
+        setKeyboardOffset(offset > 0 ? offset : 0);
+      }
+    };
+
+    window.visualViewport.addEventListener('resize', handleResize);
+    window.visualViewport.addEventListener('scroll', handleResize);
+    
+    return () => {
+      window.visualViewport?.removeEventListener('resize', handleResize);
+      window.visualViewport?.removeEventListener('scroll', handleResize);
+    };
+  }, []);
+
   useEffect(() => {
     const handleOpenChat = () => {
       setIsOpen(true);
@@ -103,7 +126,6 @@ export const AIAssistant: React.FC = () => {
     }
   }, [isTyping, currentStep, isOpen]);
 
-  // INÍCIO DA CONVERSA
   const startConversation = () => {
     setMessages([]);
     addBotMessage("Olá! Sou o seu assistente virtual. 🤖", 500);
@@ -154,7 +176,6 @@ export const AIAssistant: React.FC = () => {
     setUserInput('');
   };
 
-  // LÓGICA DE PROCESSAMENTO DE ENTRADA
   const processInput = (value: string) => {
     const cleanValue = value.trim();
 
@@ -326,7 +347,6 @@ export const AIAssistant: React.FC = () => {
     }
   };
 
-  // Renderiza opções
   const renderOptions = () => {
     const lastMessage = messages[messages.length - 1];
     if (lastMessage?.role === 'bot' && lastMessage?.options && !isTyping && currentStep !== 'SUBMITTING' && currentStep !== 'SUCCESS') {
@@ -350,12 +370,19 @@ export const AIAssistant: React.FC = () => {
   const isInputDisabled = currentStep === 'INTRO' || currentStep === 'SUBMITTING' || currentStep === 'SUCCESS' || currentStep === 'ERROR' || isTyping || (messages[messages.length - 1]?.role === 'bot' && !!messages[messages.length - 1]?.options);
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <div 
+      className="fixed z-50 flex flex-col items-end pointer-events-none"
+      style={{ 
+        bottom: `calc(${keyboardOffset}px + 1.5rem)`, 
+        right: '1.5rem',
+        left: keyboardOffset > 0 ? '1.5rem' : 'auto' // No mobile com teclado, centraliza ou expande
+      }}
+    >
       
-      {/* Balão de Notificação (Se fechado) */}
+      {/* Balão de Notificação */}
       {!isOpen && (
         <div 
-          className={`bg-white text-slate-800 px-4 py-3 rounded-2xl shadow-xl border border-slate-100 max-w-[250px] mb-3 transition-all duration-500 origin-bottom-right ${
+          className={`bg-white text-slate-800 px-4 py-3 rounded-2xl shadow-xl border border-slate-100 max-w-[250px] mb-3 transition-all duration-500 origin-bottom-right pointer-events-auto ${
             showNotification ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-75 translate-y-4 pointer-events-none'
           }`}
         >
@@ -381,12 +408,14 @@ export const AIAssistant: React.FC = () => {
 
       {/* JANELA DO CHAT */}
       <div 
-        className={`bg-slate-900 border border-slate-700 w-[320px] sm:w-[380px] h-[500px] rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300 origin-bottom-right ${
+        className={`bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300 origin-bottom-right pointer-events-auto ${
           isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-90 translate-y-10 pointer-events-none hidden'
+        } ${
+          keyboardOffset > 0 ? 'w-full h-[40vh]' : 'w-[320px] sm:w-[380px] h-[500px]'
         }`}
       >
          {/* Header */}
-         <div className="bg-slate-950 p-4 flex items-center justify-between border-b border-slate-800">
+         <div className="bg-slate-950 p-4 flex items-center justify-between border-b border-slate-800 shrink-0">
             <div className="flex items-center gap-3">
                <div className="relative">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center border border-blue-400/30">
@@ -439,7 +468,7 @@ export const AIAssistant: React.FC = () => {
          </div>
 
          {/* Input Area */}
-         <div className="p-3 bg-slate-950 border-t border-slate-800">
+         <div className="p-3 bg-slate-950 border-t border-slate-800 shrink-0">
             <form onSubmit={handleTextSubmit} className="flex gap-2">
                <input
                   ref={inputRef}
@@ -462,16 +491,17 @@ export const AIAssistant: React.FC = () => {
          </div>
       </div>
 
-      {/* FAB (Floating Action Button) - Botão de Abrir */}
+      {/* FAB (Floating Action Button) */}
       <button
         onClick={() => {
             setIsOpen(!isOpen);
             setShowNotification(false);
         }}
-        className={`group relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full shadow-2xl transition-all duration-300 z-50 ${
+        className={`group relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-full shadow-2xl transition-all duration-300 z-50 pointer-events-auto ${
             isOpen ? 'bg-slate-700 rotate-90' : 'bg-blue-600 hover:bg-blue-500 hover:scale-110'
         }`}
         aria-label="Abrir Chat"
+        style={{ display: keyboardOffset > 0 && isOpen ? 'none' : 'flex' }} // Esconde o botão quando o teclado está aberto no mobile para ganhar espaço
       >
         {isOpen ? (
             <IconX className="w-6 h-6 text-white" />

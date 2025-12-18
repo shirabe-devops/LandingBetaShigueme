@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 
 // ARQUIVO DE CLIENTES - CONFIGURAÇÃO
@@ -14,109 +15,112 @@ const clients = [
 ];
 
 // COMPONENTE INDIVIDUAL DE LOGO
-// Controla a aparência de CADA quadrado de logo
-const ClientLogo = ({ name, logo }: { name: string; logo: string }) => {
-  // Estado para controlar erro de imagem (se a imagem quebrar, mostra o texto)
+// Controla a aparência de CADA grupo (logo + nome)
+// Fix: Added React.FC type to ensure 'key' prop is recognized as a valid JSX attribute.
+const ClientLogo: React.FC<{ name: string; logo: string }> = ({ name, logo }) => {
+  // Estado para controlar erro de imagem (se a imagem quebrar, mostra o texto reserva)
   const [imgError, setImgError] = useState(false);
 
   return (
-    // CONTAINER DO LOGO (A caixa que envolve a imagem)
+    // CONTAINER DO GRUPO (Envolve a logo e o nome)
     <div className="
-      w-full                           /* Largura total disponível na coluna da grid */
-      flex items-center justify-center /* Centraliza o conteúdo (a imagem) horizontal e verticalmente */
-      p-4                              /* Espaçamento interno (padding) de 16px */
+      w-full                           /* Largura total na coluna da grid */
+      flex flex-col                    /* Empilha os itens verticalmente (Logo em cima, nome embaixo) */
+      items-center justify-center      /* Centraliza horizontal e verticalmente */
+      p-2                              /* Espaçamento interno reduzido */
       
-      /* EFEITO PRETO E BRANCO (GRAYSCALE) */
-      md:grayscale                        /* Deixa a imagem preto e branco por padrão */
-      hover:grayscale-0                /* Ao passar o mouse, remove o cinza (fica colorido) */
-      /* DICA MOBILE: Para remover o cinza no celular, mude 'grayscale' para 'grayscale-0 md:grayscale' */
+      /* EFEITO PRETO E BRANCO */
+      md:grayscale                     /* Desktop: Começa cinza */
+      hover:grayscale-0                /* Hover: Fica colorido */
+      
+      /* EFEITO DE OPACIDADE */
+      opacity-80                       /* Começa levemente transparente */
+      hover:opacity-100                /* Hover: Fica nítido */
 
-      /* EFEITO DE OPACIDADE (TRANSPARÊNCIA) */
-      opacity-80                       /* Começa com 80% de visibilidade (levemente transparente) */
-      hover:opacity-100                /* Ao passar o mouse, fica 100% visível */
-
-      /* TRANSIÇÃO SUAVE */
-      transition-all duration-300      /* Animação de 300ms para todas as mudanças (cor, tamanho, opacidade) */
+      /* TRANSIÇÃO E ZOOM */
+      transition-all duration-300      /* Animação suave */
+      hover:scale-110                  /* Zoom leve no conjunto inteiro */
       
-      /* EFEITO DE ZOOM */
-      hover:scale-130                  /* Aumenta o tamanho em 10% ao passar o mouse */
-      
-      /* ALTURA DO CONTAINER (Responsivo) */
-      h-32                             /* Altura em celulares: 128px (8rem) */
-      md:h-40                          /* Altura em Desktop (telas médias+): 160px (10rem) */
+      /* ALTURA DO CONTAINER */
+      h-40                             /* Altura fixa para alinhar os textos em baixo */
+      md:h-48                          /* Altura maior em telas grandes */
     ">
-      {!imgError ? (
-        // A IMAGEM EM SI
-        <img 
-          src={logo} 
-          alt={`Logo ${name}`} 
-          className="
-            /* ALTURA DA IMAGEM (Responsivo) - Aumente aqui para crescer o logo */
-            h-20                       /* Altura da imagem no Mobile: 80px */
-            md:h-28                    /* Altura da imagem no Desktop: 112px */
-            
-            /* LARGURA MÁXIMA - Para não estourar se a imagem for muito larga */
-            max-w-[160px]              /* Largura máxima no Mobile */
-            md:max-w-[220px]           /* Largura máxima no Desktop */
-            
-            /* COMPORTAMENTO */
-            object-contain             /* Garante que a imagem inteira apareça sem cortar, ajustando-se à caixa */
-          " 
-          loading="lazy"               /* Carregamento otimizado (só carrega quando aparece na tela) */
-          onError={() => setImgError(true)} /* Se der erro, ativa o modo texto */
-        />
-      ) : (
-        // FALLBACK DE TEXTO (Caso a imagem não carregue)
-        <span className="text-sm md:text-base font-bold text-slate-500 text-center uppercase tracking-wide border border-slate-200 bg-slate-50 px-4 py-3 rounded-lg shadow-sm w-full truncate" title={name}>
-          {name}
-        </span>
-      )}
+      
+      {/* AREA DA IMAGEM */}
+      <div className="flex-grow flex items-center justify-center w-full">
+        {!imgError ? (
+          <img 
+            src={logo} 
+            alt={`Logo ${name}`} 
+            className="
+              h-16                     /* Altura da imagem no Mobile */
+              md:h-24                  /* Altura da imagem no Desktop */
+              max-w-[140px]            /* Largura máxima */
+              md:max-w-[180px] 
+              object-contain           /* Não distorce a imagem */
+            " 
+            loading="lazy"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-300">
+            ?
+          </div>
+        )}
+      </div>
+
+      {/* NOME DO CLIENTE (Abaixo da logo) */}
+      <span className="
+        mt-3                           /* Margem superior para afastar da logo */
+        text-[10px] md:text-xs         /* Tamanho da fonte (pequena e elegante) */
+        font-semibold                  /* Peso da fonte semi-negrito */
+        text-slate-500                 /* Cor cinza intermediária */
+        text-center                    /* Centraliza o texto */
+        uppercase                      /* Letras maiúsculas */
+        tracking-wider                 /* Espaçamento entre letras */
+        max-w-full truncate            /* Se o nome for gigante, ele não quebra o layout */
+      ">
+        {name}
+      </span>
     </div>
   );
 };
 
-// COMPONENTE PRINCIPAL (A SEÇÃO INTEIRA)
+// COMPONENTE PRINCIPAL DA SEÇÃO
 export const Clients: React.FC = () => {
   return (
-    // CONTAINER DA SEÇÃO
     <div className="
-      bg-white                         /* Cor de fundo da seção */
-      py-20                            /* Espaçamento vertical (padding-top e padding-bottom): 80px */
-      border-b border-slate-100        /* Linha sutil na parte inferior para separar da próxima seção */
+      bg-white                         /* Fundo branco */
+      py-16 md:py-24                   /* Padding vertical responsivo */
+      border-b border-slate-100        /* Linha de separação */
     ">
-      {/* LIMITADOR DE LARGURA (Para o conteúdo não ficar esticado em monitores gigantes) */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* TÍTULO DA SEÇÃO */}
+        {/* TÍTULO DISCRETO */}
         <p className="
-          text-center                  /* Centraliza o texto */
-          text-sm                      /* Tamanho da fonte pequeno */
-          font-bold                    /* Negrito */
-          text-slate-400               /* Cor cinza claro */
-          uppercase                    /* Tudo em MAIÚSCULO */
-          tracking-[0.2em]             /* Espaçamento entre as letras (bem espaçado) */
-          mb-16                        /* Margem inferior (distância para os logos): 64px */
+          text-center 
+          text-xs md:text-sm 
+          font-bold 
+          text-slate-400 
+          uppercase 
+          tracking-[0.2em] 
+          mb-12 md:mb-20
         ">
           Empresas que confiam na nossa expertise
         </p>
         
-        {/* GRID LAYOUT (Agrade onde os logos ficam) */}
+        {/* GRID DE LOGOS */}
         <div className="
-          grid                         /* Ativa o sistema de Grid */
+          grid 
+          grid-cols-2                  /* Mobile: 2 colunas */
+          sm:grid-cols-3               /* Tablet: 3 colunas */
+          lg:grid-cols-4               /* Desktop: 4 colunas */
+          xl:grid-cols-5               /* Telas grandes: 5 colunas */
           
-          /* COLUNAS RESPONSIVAS (Quantos logos por linha) */
-          grid-cols-3                  /* Mobile: 2 colunas */
-          md:grid-cols-4               /* Tablet/Laptop pequeno: 4 colunas */
-          lg:grid-cols-5               /* Desktop grande: 5 colunas */
-          
-          /* ESPAÇAMENTO ENTRE OS LOGOS */
-          gap-10                       /* Distância entre colunas e linhas: 48px (Aumente ou diminua aqui) */
-          
-          /* ALINHAMENTO GERAL */
-          items-center                 /* Alinha verticalmente no centro */
-          justify-items-center         /* Alinha horizontalmente no centro de cada célula da grid */
+          gap-x-8 gap-y-12             /* Espaçamento entre colunas e linhas */
+          items-start                  /* Alinha os itens pelo topo da célula */
+          justify-items-center
         ">
-          {/* Loop que cria os logos baseado na lista lá de cima */}
           {clients.map((client, index) => (
             <ClientLogo key={`${client.name}-${index}`} name={client.name} logo={client.logo} />
           ))}
