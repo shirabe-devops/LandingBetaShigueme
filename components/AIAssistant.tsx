@@ -41,7 +41,6 @@ export const AIAssistant: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   
-  // Estado para controlar a posição dinâmica com base no teclado (Mobile)
   const [keyboardOffset, setKeyboardOffset] = useState(0);
   
   const [userData, setUserData] = useState<UserData>({
@@ -60,6 +59,7 @@ export const AIAssistant: React.FC = () => {
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // EFEITO PARA DETECTAR O TECLADO MOBILE
@@ -68,21 +68,36 @@ export const AIAssistant: React.FC = () => {
 
     const handleResize = () => {
       if (window.visualViewport) {
-        // Calcula a diferença entre a altura da janela e o que está visível
-        // Se a viewport visível for menor que a altura da janela, o teclado está aberto
         const offset = window.innerHeight - window.visualViewport.height;
         setKeyboardOffset(offset > 0 ? offset : 0);
+        
+        // Se o teclado abrir, forçamos um scroll para o fim
+        if (offset > 0) {
+            setTimeout(scrollToBottom, 100);
+        }
       }
     };
 
     window.visualViewport.addEventListener('resize', handleResize);
-    window.visualViewport.addEventListener('scroll', handleResize);
-    
-    return () => {
-      window.visualViewport?.removeEventListener('resize', handleResize);
-      window.visualViewport?.removeEventListener('scroll', handleResize);
-    };
+    return () => window.visualViewport?.removeEventListener('resize', handleResize);
   }, []);
+
+  // FUNÇÃO DE AUTO-SCROLL
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'end' 
+        });
+    }
+  };
+
+  // Scroll sempre que as mensagens mudam ou o bot para de digitar
+  useEffect(() => {
+    if (isOpen) {
+      scrollToBottom();
+    }
+  }, [messages, isOpen, isTyping]);
 
   useEffect(() => {
     const handleOpenChat = () => {
@@ -105,12 +120,6 @@ export const AIAssistant: React.FC = () => {
     }, 3000);
     return () => clearTimeout(timer);
   }, [isOpen, hasOpened]);
-
-  useEffect(() => {
-    if (isOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages, isOpen, isTyping]);
 
   useEffect(() => {
     if (isOpen && !hasOpened) {
@@ -351,12 +360,12 @@ export const AIAssistant: React.FC = () => {
     const lastMessage = messages[messages.length - 1];
     if (lastMessage?.role === 'bot' && lastMessage?.options && !isTyping && currentStep !== 'SUBMITTING' && currentStep !== 'SUCCESS') {
         return (
-            <div className="flex flex-wrap gap-2 mt-2 px-1">
+            <div className="flex flex-wrap gap-2 mt-2 px-1 pb-4">
                 {lastMessage.options.map((opt) => (
                     <button
                         key={opt.value}
                         onClick={() => handleOptionSelect(opt)}
-                        className="bg-blue-600 text-white text-xs py-1.5 px-3 rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                        className="bg-blue-600 text-white text-xs py-1.5 px-3 rounded-lg hover:bg-blue-700 transition-colors shadow-sm active:scale-95"
                     >
                         {opt.label}
                     </button>
@@ -375,7 +384,7 @@ export const AIAssistant: React.FC = () => {
       style={{ 
         bottom: `calc(${keyboardOffset}px + 1.5rem)`, 
         right: '1.5rem',
-        left: keyboardOffset > 0 ? '1.5rem' : 'auto' // No mobile com teclado, centraliza ou expande
+        left: keyboardOffset > 0 ? '1.5rem' : 'auto'
       }}
     >
       
@@ -411,7 +420,7 @@ export const AIAssistant: React.FC = () => {
         className={`bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300 origin-bottom-right pointer-events-auto ${
           isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-90 translate-y-10 pointer-events-none hidden'
         } ${
-          keyboardOffset > 0 ? 'w-full h-[40vh]' : 'w-[320px] sm:w-[380px] h-[500px]'
+          keyboardOffset > 0 ? 'w-full h-[45vh]' : 'w-[320px] sm:w-[380px] h-[500px]'
         }`}
       >
          {/* Header */}
@@ -437,7 +446,10 @@ export const AIAssistant: React.FC = () => {
          </div>
 
          {/* Messages Area */}
-         <div className="flex-grow p-4 overflow-y-auto bg-slate-900 scrollbar-hide space-y-3">
+         <div 
+            ref={scrollContainerRef}
+            className="flex-grow p-4 overflow-y-auto bg-slate-900 scrollbar-hide space-y-3"
+         >
             {messages.map((msg) => (
                 <div key={msg.id} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                    <div className={`max-w-[85%] text-xs md:text-sm p-3 rounded-2xl ${
@@ -464,7 +476,8 @@ export const AIAssistant: React.FC = () => {
                 {renderOptions()}
             </div>
             
-            <div ref={messagesEndRef} />
+            {/* O Ref de scroll deve ficar APÓS as opções para garantir que elas apareçam */}
+            <div ref={messagesEndRef} className="h-2" />
          </div>
 
          {/* Input Area */}
@@ -501,7 +514,7 @@ export const AIAssistant: React.FC = () => {
             isOpen ? 'bg-slate-700 rotate-90' : 'bg-blue-600 hover:bg-blue-500 hover:scale-110'
         }`}
         aria-label="Abrir Chat"
-        style={{ display: keyboardOffset > 0 && isOpen ? 'none' : 'flex' }} // Esconde o botão quando o teclado está aberto no mobile para ganhar espaço
+        style={{ display: keyboardOffset > 0 && isOpen ? 'none' : 'flex' }}
       >
         {isOpen ? (
             <IconX className="w-6 h-6 text-white" />
