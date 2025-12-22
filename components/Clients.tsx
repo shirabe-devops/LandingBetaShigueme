@@ -42,7 +42,7 @@ const ClientLogo: React.FC<{ name: string; logo: string }> = ({ name, logo }) =>
       hover:scale-110                  /* Zoom leve no conjunto inteiro */
       
       /* ALTURA DO CONTAINER */
-      h-40                             /* Altura fixa para alinhar os textos em baixo */
+      h-30                             /* Altura fixa para alinhar os textos em baixo */
       md:h-48                          /* Altura maior em telas grandes */
     ">
       
@@ -71,7 +71,7 @@ const ClientLogo: React.FC<{ name: string; logo: string }> = ({ name, logo }) =>
 
       {/* NOME DO CLIENTE (Abaixo da logo) */}
       <span className="
-        mt-3                           /* Margem superior para afastar da logo */
+        mt-2                           /* Margem superior para afastar da logo */
         text-[10px] md:text-xs         /* Tamanho da fonte (pequena e elegante) */
         font-semibold                  /* Peso da fonte semi-negrito */
         text-slate-500                 /* Cor cinza intermediária */
