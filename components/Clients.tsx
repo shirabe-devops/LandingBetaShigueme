@@ -12,11 +12,11 @@ const clients = [
   { name: 'Goma Chico', logo: 'https://res.cloudinary.com/dw9ohxxgw/image/upload/v1765898987/gomachico_aqzyg0.jpg' },
   { name: 'Samak Pescados', logo: 'https://res.cloudinary.com/dw9ohxxgw/image/upload/v1765898970/samakpescados_ymaxkk.jpg' },
   { name: 'Vó Corinto', logo: 'https://res.cloudinary.com/dw9ohxxgw/image/upload/v1765898966/vocorinto_sacc2o.jpg' },
+  { name: 'Farinha Glória', logo: 'https://res.cloudinary.com/dw9ohxxgw/image/upload/v1766431235/Farinha_Gl%C3%B3ria_ngxhgr.jpg' },
 ];
 
 // COMPONENTE INDIVIDUAL DE LOGO
 // Controla a aparência de CADA grupo (logo + nome)
-// Fix: Added React.FC type to ensure 'key' prop is recognized as a valid JSX attribute.
 const ClientLogo: React.FC<{ name: string; logo: string }> = ({ name, logo }) => {
   // Estado para controlar erro de imagem (se a imagem quebrar, mostra o texto reserva)
   const [imgError, setImgError] = useState(false);
@@ -63,8 +63,8 @@ const ClientLogo: React.FC<{ name: string; logo: string }> = ({ name, logo }) =>
             onError={() => setImgError(true)}
           />
         ) : (
-          <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-300">
-            ?
+          <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 font-bold border border-slate-200">
+            {name.charAt(0)}
           </div>
         )}
       </div>
