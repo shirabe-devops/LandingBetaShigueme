@@ -58,8 +58,10 @@ export const AIAssistant: React.FC = () => {
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Sistema de Scroll Automático Reforçado
   const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
     if (messagesEndRef.current) {
         messagesEndRef.current.scrollIntoView({ 
@@ -69,6 +71,7 @@ export const AIAssistant: React.FC = () => {
     }
   };
 
+  // Monitoramento avançado da Viewport para dispositivos móveis
   useEffect(() => {
     const vv = window.visualViewport;
     if (!vv) return;
@@ -78,8 +81,9 @@ export const AIAssistant: React.FC = () => {
       setKeyboardHeight(kHeight > 0 ? kHeight : 0);
       setViewportHeight(vv.height);
       
-      if (kHeight > 0) {
-        setTimeout(() => scrollToBottom('auto'), 100);
+      // Scroll imediato ao abrir teclado ou redimensionar
+      if (isOpen) {
+        setTimeout(() => scrollToBottom('auto'), 50);
       }
     };
 
@@ -91,14 +95,15 @@ export const AIAssistant: React.FC = () => {
       vv.removeEventListener('resize', handleViewportChange);
       vv.removeEventListener('scroll', handleViewportChange);
     };
-  }, []);
+  }, [isOpen]);
 
+  // Scroll automático em todas as mudanças de estado cruciais
   useEffect(() => {
     if (isOpen) {
       const timer = setTimeout(() => scrollToBottom(), 100);
       return () => clearTimeout(timer);
     }
-  }, [messages, isOpen, isTyping]);
+  }, [messages, isTyping, currentStep, isOpen]);
 
   useEffect(() => {
     const handleOpenChat = () => {
@@ -130,6 +135,7 @@ export const AIAssistant: React.FC = () => {
     }
   }, [isOpen]);
 
+  // Foco e scroll ao mudar de passo
   useEffect(() => {
     if (isOpen && !isTyping && currentStep !== 'INTRO' && currentStep !== 'SUBMITTING' && currentStep !== 'SUCCESS') {
       const timer = setTimeout(() => {
@@ -383,14 +389,20 @@ export const AIAssistant: React.FC = () => {
 
   const isInputDisabled = currentStep === 'INTRO' || currentStep === 'SUBMITTING' || currentStep === 'SUCCESS' || currentStep === 'ERROR' || isTyping || (messages[messages.length - 1]?.role === 'bot' && !!messages[messages.length - 1]?.options);
 
+  // Determinar se o chat deve ser full screen (Mobile + Teclado)
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+  const isFullScreen = isOpen && isMobile && keyboardHeight > 0;
+
   return (
     <div 
-      className="fixed z-[9999] flex flex-col items-end pointer-events-none w-full sm:w-auto"
+      className="fixed z-[9999] flex flex-col items-end pointer-events-none"
       style={{ 
-        bottom: keyboardHeight > 0 ? `${keyboardHeight}px` : '1.5rem', 
-        right: keyboardHeight > 0 ? '0' : '1.5rem',
-        left: keyboardHeight > 0 ? '0' : 'auto',
-        transition: 'bottom 0.1s ease-out'
+        bottom: isFullScreen ? '0' : (keyboardHeight > 0 ? `${keyboardHeight}px` : '1.5rem'), 
+        right: isFullScreen ? '0' : (keyboardHeight > 0 ? '0' : '1.5rem'),
+        left: isFullScreen ? '0' : (keyboardHeight > 0 ? '0' : 'auto'),
+        top: isFullScreen ? '0' : 'auto',
+        width: isFullScreen ? '100%' : 'auto',
+        transition: 'all 0.15s ease-out'
       }}
     >
       
@@ -424,12 +436,12 @@ export const AIAssistant: React.FC = () => {
         className={`bg-slate-900 border-slate-700 shadow-2xl flex flex-col overflow-hidden transition-all duration-300 origin-bottom pointer-events-auto ${
           isOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-90 translate-y-10 pointer-events-none hidden'
         } ${
-          keyboardHeight > 0 
-          ? 'w-full h-full max-h-[100dvh] rounded-none' 
+          isFullScreen 
+          ? 'w-full h-full rounded-none border-none' 
           : 'w-[320px] sm:w-[380px] h-[500px] rounded-2xl border'
         }`}
         style={{ 
-            height: keyboardHeight > 0 ? `${viewportHeight}px` : undefined 
+            height: isFullScreen ? `${viewportHeight}px` : (keyboardHeight > 0 ? `${viewportHeight}px` : undefined)
         }}
       >
          <div className="bg-slate-950 p-4 flex items-center justify-between border-b border-slate-800 shrink-0">
@@ -454,13 +466,14 @@ export const AIAssistant: React.FC = () => {
          </div>
 
          <div 
+            ref={scrollContainerRef}
             className="flex-grow p-4 overflow-y-auto bg-slate-900 scrollbar-hide space-y-3"
          >
             {messages.map((msg) => (
                 <div key={msg.id} className={`flex w-full ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                    <div className={`max-w-[85%] text-xs md:text-sm p-3 rounded-2xl ${
                       msg.role === 'user' 
-                      ? 'bg-blue-600 text-white rounded-br-none' 
+                      ? 'bg-blue-600 text-white rounded-br-none shadow-lg' 
                       : 'bg-slate-800 text-slate-200 rounded-bl-none border border-slate-700'
                    }`}>
                       {msg.content}
@@ -482,26 +495,29 @@ export const AIAssistant: React.FC = () => {
                 {renderOptions()}
             </div>
             
-            <div ref={messagesEndRef} className="h-4 w-full clear-both" />
+            <div ref={messagesEndRef} className="h-6 w-full clear-both" />
          </div>
 
          <div className="p-3 bg-slate-950 border-t border-slate-800 shrink-0">
             <form onSubmit={handleTextSubmit} className="flex gap-2">
                <input
                   ref={inputRef}
-                  onFocus={() => setTimeout(scrollToBottom, 200)}
+                  onFocus={() => {
+                    // Scroll suave forçado ao focar
+                    setTimeout(scrollToBottom, 300);
+                  }}
                   type={currentStep === 'PHONE' || currentStep === 'DOC_VALUE' ? 'tel' : currentStep === 'EMAIL' ? 'email' : 'text'}
                   value={userInput}
                   onChange={(e) => setUserInput(e.target.value)}
                   placeholder={isInputDisabled ? "Aguarde..." : "Digite aqui..."}
                   disabled={isInputDisabled}
-                  className="flex-grow bg-slate-900 text-white text-sm rounded-lg px-3 py-2 outline-none border border-slate-800 focus:border-blue-500 transition-colors disabled:opacity-50"
+                  className="flex-grow bg-slate-900 text-white text-sm rounded-lg px-3 py-2.5 outline-none border border-slate-800 focus:border-blue-500 transition-colors disabled:opacity-50"
                   autoComplete="off"
                />
                <button 
                   type="submit"
                   disabled={isInputDisabled || !userInput.trim()}
-                  className="bg-blue-600 hover:bg-blue-500 text-white p-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="bg-blue-600 hover:bg-blue-500 text-white p-2.5 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-lg active:scale-95"
                >
                   <IconSend className="w-5 h-5" />
                </button>
