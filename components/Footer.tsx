@@ -4,13 +4,10 @@ import { IconLinkedIn, IconFacebook, IconInstagram } from './Icons';
 
 interface FooterProps {
   onOpenPrivacy: () => void;
+  onSelectService: (id: string) => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onOpenPrivacy }) => {
-  const openChat = () => {
-    window.dispatchEvent(new CustomEvent('open-chat'));
-  };
-
+export const Footer: React.FC<FooterProps> = ({ onOpenPrivacy, onSelectService }) => {
   return (
     <footer className="bg-slate-950 text-slate-400 py-12 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -27,10 +24,31 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPrivacy }) => {
           <div>
             <h4 className="text-white font-bold mb-4 uppercase text-sm tracking-wider">Serviços</h4>
             <ul className="space-y-2 text-sm">
-              <li><a href="#services" className="hover:text-blue-400 transition-colors">Consultoria Agro</a></li>
-              <li><a href="#services" className="hover:text-blue-400 transition-colors">Diagnóstico Contábil</a></li>
-              <li><a href="#services" className="hover:text-blue-400 transition-colors">Planejamento Estratégico</a></li>
-              <li><a href="#services" className="hover:text-blue-400 transition-colors">Recuperação de Créditos</a></li>
+              <li>
+                <button onClick={() => onSelectService('adequacao-reforma')} className="hover:text-blue-400 transition-colors text-left">
+                  Adequação à Reforma
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onSelectService('agro-intelligence')} className="hover:text-blue-400 transition-colors text-left">
+                  Consultoria Agro
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onSelectService('diagnostico-contabil')} className="hover:text-blue-400 transition-colors text-left">
+                  Diagnóstico Contábil
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onSelectService('planejamento-estrategico')} className="hover:text-blue-400 transition-colors text-left">
+                  Planejamento Estratégico
+                </button>
+              </li>
+              <li>
+                <button onClick={() => onSelectService('recuperacao-creditos')} className="hover:text-blue-400 transition-colors text-left">
+                  Recuperação de Créditos
+                </button>
+              </li>
             </ul>
           </div>
 

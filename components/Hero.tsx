@@ -114,15 +114,7 @@ export const Hero: React.FC = () => {
           {/* Left Column: Text Content */}
           <div className="text-center lg:text-left relative z-30 mb-8 lg:mb-0">
             
-            <div className={`${baseTransition} ${isVisible ? visibleState : hiddenState} inline-flex items-center justify-center lg:justify-start px-4 py-2 rounded-full bg-blue-900/30 border border-blue-500/30 text-blue-400 text-sm font-semibold mb-8 backdrop-blur-md shadow-[0_0_15px_rgba(59,130,246,0.1)]`}>
-              <span className="relative flex h-2 w-2 mr-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-              </span>
-              Prontos para a Reforma Tributária 2026
-            </div>
-
-            <h1 className={`${baseTransition} delay-200 ${isVisible ? visibleState : hiddenState} text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight leading-[1.1] mb-6`}>
+            <h1 className={`${baseTransition} delay-200 ${isVisible ? visibleState : hiddenState} text-4xl sm:text-5xl md:text-6xl font-bold text-white tracking-tight leading-[1.1] mb-6 pt-4 lg:pt-0`}>
               Inteligência <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-white animate-pulse-slow">Tributária</span> para o seu Negócio.
             </h1>
@@ -133,49 +125,25 @@ export const Hero: React.FC = () => {
             </p>
 
             {/* DESKTOP BUTTONS (Hidden on mobile/tablet) */}
-            <ActionButtons className="hidden lg:flex flex-row gap-5 justify-start items-center w-full mb-10" />
-
-            <div className={`${baseTransition} delay-[800ms] ${isVisible ? visibleState : hiddenState} flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 text-slate-500 text-sm font-medium border-t border-white/5 pt-8`}>
-               <div className="flex items-center gap-2">
-                  <div className="p-1 rounded-full bg-green-500/10 border border-green-500/20">
-                    <IconCheck className="w-4 h-4 text-green-500" />
-                  </div>
-                  <span>Compliance Fiscal 100%</span>
-               </div>
-               <div className="flex items-center gap-2">
-                  <div className="p-1 rounded-full bg-blue-500/10 border border-blue-500/20">
-                    <IconTrendingUp className="w-4 h-4 text-blue-500" />
-                  </div>
-                  <span>Recuperação de Créditos</span>
-               </div>
-            </div>
+            <ActionButtons className="hidden lg:flex flex-row gap-5 justify-start items-center w-full" />
 
           </div>
 
           {/* Right Column: Abstract Calculation Orbit System */}
           <div className={`relative ${baseTransition} delay-[1000ms] ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'} flex items-center justify-center h-[380px] sm:h-[450px] lg:h-[600px] w-full overflow-visible`}>
              
-             {/* 
-                 ORBIT SYSTEM CONTAINER 
-                 Fixed: Used shrink-0 and specific w/h for mobile to ensure circle shape.
-                 Mobile: 340px (no scale). Desktop: 500px.
-             */}
              <div className="relative w-[340px] h-[340px] sm:w-[500px] sm:h-[500px] orbit-system scale-100 lg:scale-100 transition-all duration-500 origin-center shrink-0">
                 
-                {/* 1. The Center Point (Void/Crosshair) - No Heavy Anchor */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4">
                    <div className="absolute inset-0 bg-blue-500 rounded-full animate-ping opacity-20"></div>
                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.8)]"></div>
-                   {/* Crosshairs */}
                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200px] h-[1px] bg-gradient-to-r from-transparent via-blue-500/30 to-transparent"></div>
                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1px] h-[200px] bg-gradient-to-b from-transparent via-blue-500/30 to-transparent"></div>
                 </div>
 
-                {/* 2. Inner Ring (Mathematical/Symbols) - Counter-Clockwise */}
                 <div className="absolute inset-[15%] rounded-full border border-slate-800/60 animate-orbit-ccw">
                     <div className="absolute inset-0 rounded-full border border-dashed border-slate-700/30 opacity-50"></div>
                     
-                    {/* Math Symbols Floating */}
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
                         <div className="animate-item-fix-ccw bg-slate-900/50 p-2 rounded-lg border border-slate-700 text-cyan-400 font-mono text-xs shadow-lg backdrop-blur-sm">
                             %
@@ -198,14 +166,11 @@ export const Hero: React.FC = () => {
                     </div>
                 </div>
 
-                {/* 3. Outer Ring (Main Widgets) - Clockwise */}
                 <div className="absolute inset-0 rounded-full border border-slate-800 animate-orbit-cw">
                     
-                    {/* Decorative Arc on Ring */}
                     <div className="absolute -top-[1px] left-1/2 -translate-x-1/2 w-1/4 h-[1px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent shadow-[0_0_10px_#06b6d4]"></div>
                     <div className="absolute -bottom-[1px] left-1/2 -translate-x-1/2 w-1/4 h-[1px] bg-gradient-to-r from-transparent via-blue-500 to-transparent shadow-[0_0_10px_#3b82f6]"></div>
 
-                    {/* Widget 1: Economia (Top Right) */}
                     <div className="absolute top-[8%] right-[8%]">
                        <div className="animate-item-fix-cw bg-slate-900/80 backdrop-blur-md p-3 md:p-4 rounded-2xl border border-slate-700/50 shadow-[0_0_30px_rgba(0,0,0,0.5)] flex items-center gap-3 w-40 md:w-48 hover:border-green-500/50 transition-colors">
                            <div className="bg-green-500/20 p-2 md:p-2.5 rounded-xl shrink-0">
@@ -218,7 +183,6 @@ export const Hero: React.FC = () => {
                        </div>
                     </div>
 
-                    {/* NEW WIDGET: Tax Burden Reduction (Top Left) */}
                     <div className="absolute top-[18%] left-[5%]">
                        <div className="animate-item-fix-cw bg-slate-900/80 backdrop-blur-md px-3 py-2 rounded-lg border border-slate-700/50 shadow-lg flex flex-col items-center gap-1 w-20 md:w-24 hover:scale-105 transition-transform cursor-default">
                            <span className="text-[8px] md:text-[9px] text-slate-400 uppercase font-bold tracking-wider">Carga Ef.</span>
@@ -229,7 +193,6 @@ export const Hero: React.FC = () => {
                        </div>
                     </div>
 
-                    {/* Widget 2: Planejamento (Left) */}
                     <div className="absolute top-1/2 -left-2 md:-left-6 -translate-y-1/2">
                        <div className="animate-item-fix-cw bg-slate-900/90 backdrop-blur-xl p-3 rounded-xl border border-cyan-500/30 shadow-[0_0_20px_rgba(6,182,212,0.15)] flex flex-col gap-2 w-32 md:w-40 hover:scale-105 transition-transform">
                           <div className="flex items-center gap-2 border-b border-slate-700/50 pb-2">
@@ -243,7 +206,6 @@ export const Hero: React.FC = () => {
                        </div>
                     </div>
 
-                    {/* Widget 3: Compliance/Shield (Bottom Left) */}
                     <div className="absolute bottom-[10%] left-[10%]">
                        <div className="animate-item-fix-cw bg-slate-800/80 backdrop-blur-md px-3 py-2 md:px-4 md:py-3 rounded-full border border-slate-600/50 shadow-xl flex items-center gap-2 md:gap-3">
                            <div className="bg-blue-500 rounded-full p-1">
@@ -256,7 +218,6 @@ export const Hero: React.FC = () => {
                        </div>
                     </div>
 
-                    {/* NEW WIDGET: AI Audit (Bottom Right) */}
                     <div className="absolute bottom-[20%] right-[5%]">
                          <div className="animate-item-fix-cw bg-slate-800/90 backdrop-blur-md p-2 rounded-xl border border-purple-500/30 shadow-[0_0_15px_rgba(168,85,247,0.2)] flex items-center gap-2">
                              <div className="relative w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
@@ -270,7 +231,6 @@ export const Hero: React.FC = () => {
                          </div>
                     </div>
 
-                    {/* Widget 4: Graph (Right Center) */}
                     <div className="absolute top-1/2 -right-0 md:-right-4 -translate-y-1/2">
                        <div className="animate-item-fix-cw bg-slate-900/80 backdrop-blur-md p-2 md:p-3 rounded-xl border border-slate-700/50 shadow-xl">
                           <div className="flex items-end gap-1 md:gap-1.5 h-8 md:h-10 mb-1 border-b border-slate-700 pb-1 w-full justify-center">
@@ -285,15 +245,12 @@ export const Hero: React.FC = () => {
 
                 </div>
 
-                {/* Decorative Elements around Orbit */}
                 <div className="absolute top-0 right-0 w-2 h-2 bg-blue-500/50 rounded-full animate-pulse"></div>
                 <div className="absolute bottom-0 left-0 w-2 h-2 bg-cyan-500/50 rounded-full animate-pulse delay-700"></div>
 
              </div>
           </div>
 
-          {/* MOBILE/TABLET BUTTONS (Visible on mobile/tablet, hidden on desktop) 
-              Placed here to appear visually below the animation on small screens */}
           <ActionButtons className="flex lg:hidden flex-col sm:flex-row gap-5 justify-center items-center w-full mt-4" />
 
         </div>

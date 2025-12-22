@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
@@ -44,7 +45,7 @@ function App() {
             <Services onSelectService={navigateToService} />
             <About />
           </main>
-          <Footer onOpenPrivacy={navigateToPrivacy} />
+          <Footer onOpenPrivacy={navigateToPrivacy} onSelectService={navigateToService} />
           <AIAssistant />
         </>
       )}

@@ -141,7 +141,7 @@ export const AIAssistant: React.FC = () => {
 
   const startConversation = () => {
     setMessages([]);
-    addBotMessage("Olá! Sou o seu assistente virtual da Shigueme Consultoria Tributária. 🤖", 500);
+    addBotMessage("Olá! Sou o seu assistente virtual. 🤖", 500);
     
     const serviceOptions: ChatOption[] = [
         { label: 'Diagnóstico Contábil', value: 'diagnostico-contabil' },
@@ -226,7 +226,7 @@ export const AIAssistant: React.FC = () => {
             return;
         }
         setUserData(prev => ({ ...prev, email: cleanValue.toLowerCase() }));
-        addBotMessage("Anotado. Qual seu WhatsApp (DDD + 9 dígitos)?", 600, () => setCurrentStep('PHONE'));
+        addBotMessage("Qual seu WhatsApp (DDD + 9 dígitos)?", 600, () => setCurrentStep('PHONE'));
         break;
 
       case 'PHONE':
@@ -254,7 +254,7 @@ export const AIAssistant: React.FC = () => {
             { label: 'R$ 1M - R$ 5M', value: '1m_5m' },
             { label: 'Acima de R$ 5M', value: 'acima_5m' },
         ];
-        addBotMessage("Entendido. Qual o faturamento mensal estimado da empresa?", 800, () => setCurrentStep('REVENUE'), revenueOptions);
+        addBotMessage("Qual o faturamento mensal estimado da empresa?", 800, () => setCurrentStep('REVENUE'), revenueOptions);
         break;
 
       case 'REVENUE':
@@ -392,7 +392,8 @@ export const AIAssistant: React.FC = () => {
       
       {!isOpen && (
         <div 
-          className={`bg-white text-slate-800 px-4 py-3 rounded-2xl shadow-xl border border-slate-100 max-w-[250px] mb-3 transition-all duration-500 origin-bottom-right pointer-events-auto ${
+          onClick={() => window.dispatchEvent(new CustomEvent('open-chat'))}
+          className={`bg-white text-slate-800 px-4 py-3 rounded-2xl shadow-xl border border-slate-100 max-w-[250px] mb-3 transition-all duration-500 origin-bottom-right pointer-events-auto cursor-pointer ${
             showNotification ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-75 translate-y-4 pointer-events-none'
           }`}
         >
@@ -401,14 +402,13 @@ export const AIAssistant: React.FC = () => {
                 <IconShield className="w-4 h-4 text-blue-600" />
              </div>
              <div>
-                <p className="text-xs font-bold mb-1">Diagnóstico Gratuito</p>
-                <p className="text-xs text-slate-500 leading-tight">
-                  Posso analisar o perfil tributário da sua empresa agora?
+                <p className="text-xs text-slate-600 font-medium leading-tight">
+                  Olá, clique aqui e agende uma consulta!
                 </p>
              </div>
              <button 
                 onClick={(e) => { e.stopPropagation(); setShowNotification(false); }}
-                className="text-slate-400 hover:text-slate-600"
+                className="text-slate-400 hover:text-slate-600 shrink-0"
              >
                <IconX className="w-3 h-3" />
              </button>
