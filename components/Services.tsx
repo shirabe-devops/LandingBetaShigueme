@@ -66,7 +66,7 @@ const serviceTabs: Tab[] = [
     icon: <Sprout className="h-4 w-4 shrink-0" />,
     label: "Agro",
     content: {
-      badge: "Soluções Rurais",
+      badge: "Serviços Rurais",
       title: "Excelência no Agronegócio",
       description: "Gestão técnica de LCDPR, ITR e planejamento para o produtor rural. Transformando a lida no campo em eficiência fiscal e sucessão familiar sólida.",
       buttonText: "Ver Detalhes",
@@ -107,7 +107,7 @@ export const Services: React.FC<ServicesProps> = ({ onSelectService }) => {
             Especialidades Tributárias
           </Badge>
           <h2 className="max-w-2xl text-4xl font-bold md:text-5xl text-white">
-            Nossas <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Soluções</span>
+            Nossos <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">Serviços</span>
           </h2>
           <p className="text-slate-400 max-w-xl text-lg">
             Transformamos a complexidade tributária em vantagem competitiva para sua empresa através de inteligência e compliance.

@@ -142,7 +142,7 @@ export const ServiceDetailPage: React.FC<ServiceDetailPageProps> = ({ serviceId,
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
              <div>
-                <h3 className="text-2xl font-bold text-white">Explorar outras soluções</h3>
+                <h3 className="text-2xl font-bold text-white">Explorar outros serviços</h3>
                 <p className="text-slate-500 text-sm">Conheça mais serviços da Shigueme Consultoria</p>
              </div>
              <button 

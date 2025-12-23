@@ -150,7 +150,7 @@ export const AIAssistant: React.FC = () => {
         { label: 'Planejamento Estratégico', value: 'planejamento-estrategico' },
     ];
 
-    addBotMessage("Para começarmos, qual dessas soluções você está buscando hoje?", 1500, () => setCurrentStep('SERVICE_SELECTION'), serviceOptions);
+    addBotMessage("Para começarmos, qual desses serviços você está buscando hoje?", 1500, () => setCurrentStep('SERVICE_SELECTION'), serviceOptions);
   };
 
   const addBotMessage = (text: string, delay: number = 0, callback?: () => void, options?: ChatOption[]) => {

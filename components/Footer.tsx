@@ -22,7 +22,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenPrivacy, onSelectService, 
                Shigueme<span className="text-blue-500"> Consultoria Tributária</span>
              </button>
              <p className="text-sm mb-4">
-               Soluções inteligentes para consultoria estratégica, compliance agro e planejamento tributário.
+               Serviços inteligentes para consultoria estratégica, compliance agro e planejamento tributário.
              </p>
           </div>
 

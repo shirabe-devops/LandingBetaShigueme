@@ -1,13 +1,86 @@
 
 import React, { useEffect } from 'react';
-import { ArrowLeft, ShieldCheck, MessageSquarePlus, Globe, TrendingUp, AlertCircle, Link2, Zap, CheckCircle2 } from 'lucide-react';
+import { 
+  ArrowLeft, 
+  ShieldCheck, 
+  MessageSquarePlus, 
+  TrendingUp, 
+  AlertCircle, 
+  Link2, 
+  Zap, 
+  CheckCircle2,
+  BarChart3,
+  Coins,
+  ClipboardList,
+  Sprout,
+  ArrowRight
+} from 'lucide-react';
 
 interface TaxManagementPageProps {
   onBack: () => void;
   onGoToServices: () => void;
+  onNavigateToService?: (id: string) => void;
 }
 
-export const TaxManagementPage: React.FC<TaxManagementPageProps> = ({ onBack, onGoToServices }) => {
+interface ServiceDetail {
+  id: string;
+  title: string;
+  shortTitle: string;
+  subtitle: string;
+  description: string;
+  icon: React.ReactNode;
+  color: string;
+}
+
+const SERVICE_DETAILS: ServiceDetail[] = [
+  {
+    id: 'adequacao-reforma',
+    title: 'Adequação à Reforma Tributária',
+    shortTitle: 'Reforma Tributária',
+    subtitle: 'Navegando pela Transição para o IVA Dual (IBS e CBS)',
+    description: 'Prepare sua empresa para o maior marco fiscal da história recente do Brasil.',
+    icon: <BarChart3 className="w-6 h-6" />,
+    color: 'blue'
+  },
+  {
+    id: 'recuperacao-creditos',
+    title: 'Recuperação de Créditos',
+    shortTitle: 'Recuperação Créditos',
+    subtitle: 'Inteligência Administrativa para Ativos Fiscais',
+    description: 'Recupere valores pagos indevidamente e injete caixa imediato no seu negócio.',
+    icon: <Coins className="w-6 h-6" />,
+    color: 'cyan'
+  },
+  {
+    id: 'consultoria-contabil',
+    title: 'Consultoria Contábil e Financeira',
+    shortTitle: 'Consultoria Contábil',
+    subtitle: 'Consultoria Estratégica e Otimização de Processos',
+    description: 'Mapeamento estratégico para decisões mais assertivas e processos otimizados.',
+    icon: <ClipboardList className="w-6 h-6" />,
+    color: 'indigo'
+  },
+  {
+    id: 'agro-intelligence',
+    title: 'Soluções para o Agronegócio',
+    shortTitle: 'Soluções Agro',
+    subtitle: 'Gestão Rural, LCDPR e Estratégia Tributária no Campo',
+    description: 'Consultoria especializada para produtores rurais e empresas do setor agro.',
+    icon: <Sprout className="w-6 h-6" />,
+    color: 'emerald'
+  },
+  {
+    id: 'planejamento-estrategico',
+    title: 'Planejamento Estratégico',
+    shortTitle: 'Plan. Estratégico',
+    subtitle: 'Engenharia Tributária e Societária',
+    description: 'Estruturação inteligente para a menor carga tributária possível dentro da lei.',
+    icon: <TrendingUp className="w-6 h-6" />,
+    color: 'blue'
+  }
+];
+
+export const TaxManagementPage: React.FC<TaxManagementPageProps> = ({ onBack, onGoToServices, onNavigateToService }) => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -137,24 +210,64 @@ export const TaxManagementPage: React.FC<TaxManagementPageProps> = ({ onBack, on
               Agendar Consultoria
             </button>
           </div>
-
         </div>
       </section>
 
-      {/* Footer Navigation */}
-      <div className="max-w-4xl mx-auto py-20 px-4 flex flex-col md:flex-row gap-8 items-center justify-center border-t border-slate-900">
+      {/* Modern Service Navigator Section */}
+      <section className="py-20 px-4 border-t border-slate-900 bg-slate-950/50">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-4">
+             <div>
+                <h3 className="text-2xl font-bold text-white">Explorar nossos serviços</h3>
+                <p className="text-slate-500 text-sm">Conheça mais serviços especializados da Shigueme Consultoria</p>
+             </div>
+             <button 
+                onClick={onBack}
+                className="text-blue-400 hover:text-blue-300 font-semibold text-sm flex items-center gap-1 group"
+             >
+                Ver todos na Home <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+             </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            {SERVICE_DETAILS.map((service) => (
+              <button
+                key={service.id}
+                onClick={() => onNavigateToService?.(service.id)}
+                className="relative group bg-slate-900/50 border border-slate-800 p-6 rounded-2xl hover:border-blue-500/50 hover:bg-slate-900 transition-all text-left overflow-hidden"
+              >
+                {/* Glow Effect */}
+                <div className={`absolute -right-4 -top-4 w-20 h-20 bg-${service.color}-500/10 rounded-full blur-2xl group-hover:bg-${service.color}-500/20 transition-all`}></div>
+                
+                <div className={`mb-4 text-${service.color}-400 group-hover:scale-110 transition-transform origin-left`}>
+                   {service.icon}
+                </div>
+                
+                <h4 className="font-bold text-white text-xs mb-2 group-hover:text-blue-400 transition-colors uppercase tracking-wider">
+                  {service.shortTitle}
+                </h4>
+                
+                <p className="text-slate-500 text-[10px] leading-tight line-clamp-2">
+                  {service.description}
+                </p>
+
+                <div className="mt-4 flex items-center gap-2 text-[10px] font-bold text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                  SAIBA MAIS <ArrowRight className="w-3 h-3" />
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer Minimal Navigation */}
+      <div className="max-w-4xl mx-auto py-12 px-4 flex justify-center border-t border-slate-900/50">
          <button 
             onClick={onBack}
-            className="flex items-center gap-2 text-slate-500 hover:text-white transition-all group"
+            className="flex items-center gap-2 text-slate-500 hover:text-white transition-all group text-sm"
           >
-            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             <span>Voltar ao Início</span>
-          </button>
-          <button 
-            onClick={onGoToServices}
-            className="text-slate-500 hover:text-white transition-all font-medium"
-          >
-            Explorar Outras Soluções
           </button>
       </div>
     </div>

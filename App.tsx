@@ -93,6 +93,7 @@ function App() {
           <TaxManagementPage 
             onBack={navigateToHome} 
             onGoToServices={() => navigateToSection('services')} 
+            onNavigateToService={navigateToService}
           />
           <Footer 
             onOpenPrivacy={navigateToPrivacy} 
