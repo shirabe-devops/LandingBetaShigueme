@@ -8,7 +8,7 @@ import {
   formatPhone 
 } from '../utils/validators';
 
-const N8N_WEBHOOK_URL = 'https://n8nwebhook.shirabe.com.br/webhook/lpshigueme'; 
+const N8N_WEBHOOK_URL = 'https://n8n.shirabe.com.br/webhook-test/lpshigueme' //'https://n8nwebhook.shirabe.com.br/webhook/lpshigueme'; 
 
 type ChatStep = 
   | 'INTRO'
@@ -41,8 +41,6 @@ export const AIAssistant: React.FC = () => {
   
   const [userData, setUserData] = useState<UserData>({
     service: '',
-    documentType: '',
-    documentValue: '',
     name: '', 
     email: '', 
     phone: '', 
@@ -262,10 +260,10 @@ export const AIAssistant: React.FC = () => {
         
         const regimeOptions: ChatOption[] = [
             { label: 'MEI', value: 'mei' },
-            { label: 'Simples Nacional', value: 'simples' },
-            { label: 'Lucro Presumido', value: 'presumido' },
-            { label: 'Lucro Real', value: 'real' },
-            { label: 'Não sei / Abertura', value: 'nao_sei' },
+            { label: 'Simples Nacional', value: 'simples_nacional' },
+            { label: 'Lucro Presumido', value: 'lucro_presumido' },
+            { label: 'Lucro Real', value: 'lucro_real' },
+            { label: 'Não sei / Abertura', value: 'naosei_abertura' },
         ];
         addBotMessage("Qual o Regime Tributário atual?", 600, () => setCurrentStep('REGIME'), regimeOptions);
         break;
@@ -275,7 +273,7 @@ export const AIAssistant: React.FC = () => {
         
         const sectorOptions: ChatOption[] = [
             { label: 'Indústria', value: 'industria' },
-            { label: 'Comércio/Varejo', value: 'comercio' },
+            { label: 'Comércio/Varejo', value: 'comercio/varejo' },
             { label: 'Atacado', value: 'atacado'},
             { label: 'Serviços', value: 'servicos' },
             { label: 'Agro', value: 'agro' },
@@ -289,14 +287,14 @@ export const AIAssistant: React.FC = () => {
         setUserData(prev => ({ ...prev, sector: value }));
 
         const needOptions: ChatOption[] = [
-            { label: 'Reduzir Impostos', value: 'reduzir_carga' },
-            { label: 'Resolver Dívidas', value: 'dividas' },
-            { label: 'Recup. Créditos', value: 'recuperacao_credito' },
-            { label: 'Cons. Contábil', value: 'consultoria_contabil' },
+            { label: 'Reduzir Impostos', value: 'reduzir_impostos' },
+            { label: 'Resolver Dívidas', value: 'resolver_dividas' },
+            { label: 'Recuperação de Créditos', value: 'recuperacao_de_credito' },
+            { label: 'Consultoria Contábil', value: 'consultoria_contabil' },
             { label: 'Reforma Tributária', value: 'reforma_tributaria' },
             { label: 'Outro', value: 'outro' },
         ];
-        addBotMessage("Qual seu maior desafio ou objetivo hoje?", 600, () => setCurrentStep('MAIN_NEED'), needOptions);
+        addBotMessage("Qual o seu maior objetivo hoje?", 600, () => setCurrentStep('MAIN_NEED'), needOptions);
         break;
 
       case 'MAIN_NEED':

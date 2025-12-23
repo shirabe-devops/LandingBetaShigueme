@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 export interface ServiceItem {
@@ -35,8 +36,6 @@ export interface ChatMessage {
 
 export interface UserData {
   service: string; // Novo campo para o serviço selecionado
-  documentType: 'CPF' | 'CNPJ' | '';
-  documentValue: string;
   name: string;
   email: string;
   phone: string;
