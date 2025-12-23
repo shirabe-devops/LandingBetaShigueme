@@ -2,13 +2,25 @@
 import React, { useState } from 'react';
 import { IconMenu, IconX } from './Icons';
 
-export const Navbar: React.FC = () => {
+interface NavbarProps {
+  onNavigateAtuacao?: () => void;
+  onNavigateHome?: () => void;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ onNavigateAtuacao, onNavigateHome }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Função para abrir o chat flutuante
   const openChat = () => {
     window.dispatchEvent(new CustomEvent('open-chat'));
     setIsOpen(false);
+  };
+
+  const handleLinkClick = (e: React.MouseEvent, action?: () => void) => {
+    if (action) {
+      e.preventDefault();
+      action();
+      setIsOpen(false);
+    }
   };
 
   return (
@@ -18,18 +30,21 @@ export const Navbar: React.FC = () => {
           
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <a href="#home" className="group font-bold text-xl md:text-2xl text-white tracking-tight hover:opacity-90 transition-opacity flex items-center gap-2">
-              {/* Efeito de brilho sutil no texto */}
+            <button 
+              onClick={(e) => handleLinkClick(e, onNavigateHome)}
+              className="group font-bold text-xl md:text-2xl text-white tracking-tight hover:opacity-90 transition-opacity flex items-center gap-2"
+            >
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-300 group-hover:to-white">
                 Shigueme
               </span>
               <span className="text-blue-400 font-semibold whitespace-nowrap">Consultoria Tributária</span>
-            </a>
+            </button>
           </div>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-1 items-center">
-            <a href="#home" className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200">Início</a>
+            <button onClick={(e) => handleLinkClick(e, onNavigateHome)} className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200">Início</button>
+            <button onClick={(e) => handleLinkClick(e, onNavigateAtuacao)} className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200">Atuação</button>
             <a href="#services" className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200">Serviços</a>
             <a href="#about" className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-200">Sobre Nós</a>
             
@@ -57,20 +72,25 @@ export const Navbar: React.FC = () => {
         </div>
       </div>
       
-      {/* Mobile Menu Dropdown (Glass Effect) */}
+      {/* Mobile Menu Dropdown */}
       <div 
         className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
           isOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
         <div className="bg-slate-900/95 backdrop-blur-xl border-t border-white/10 px-4 pt-4 pb-6 space-y-2 flex flex-col shadow-2xl">
-          <a 
-            href="#home" 
-            onClick={() => setIsOpen(false)} 
-            className="block px-4 py-3 text-base font-medium text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors border-l-4 border-transparent hover:border-blue-500"
+          <button 
+            onClick={(e) => handleLinkClick(e, onNavigateHome)} 
+            className="text-left block px-4 py-3 text-base font-medium text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors border-l-4 border-transparent hover:border-blue-500"
           >
             Início
-          </a>
+          </button>
+          <button 
+            onClick={(e) => handleLinkClick(e, onNavigateAtuacao)} 
+            className="text-left block px-4 py-3 text-base font-medium text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors border-l-4 border-transparent hover:border-blue-500"
+          >
+            Atuação
+          </button>
           <a 
             href="#services" 
             onClick={() => setIsOpen(false)} 

@@ -9,8 +9,9 @@ import { Footer } from './components/Footer';
 import { AIAssistant } from './components/AIAssistant';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { ServiceDetailPage } from './components/ServiceDetailPage';
+import { TaxManagementPage } from './components/TaxManagementPage';
 
-type Page = 'home' | 'privacy' | 'service-detail';
+type Page = 'home' | 'privacy' | 'service-detail' | 'tax-management';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -27,6 +28,11 @@ function App() {
     window.scrollTo(0, 0);
   };
 
+  const navigateToTaxManagement = () => {
+    setCurrentPage('tax-management');
+    window.scrollTo(0, 0);
+  };
+
   const navigateToHome = () => {
     setCurrentPage('home');
     setSelectedServiceId(null);
@@ -36,16 +42,33 @@ function App() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-900 scroll-smooth">
       
+      {(currentPage === 'home' || currentPage === 'tax-management') && (
+        <Navbar onNavigateAtuacao={navigateToTaxManagement} onNavigateHome={navigateToHome} />
+      )}
+
       {currentPage === 'home' && (
         <>
-          <Navbar />
           <main className="flex-grow">
             <Hero />
             <Clients />
             <Services onSelectService={navigateToService} />
             <About />
           </main>
-          <Footer onOpenPrivacy={navigateToPrivacy} onSelectService={navigateToService} />
+          <Footer onOpenPrivacy={navigateToPrivacy} onSelectService={navigateToService} onSelectAtuacao={navigateToTaxManagement} />
+          <AIAssistant />
+        </>
+      )}
+
+      {currentPage === 'tax-management' && (
+        <>
+          <TaxManagementPage 
+            onBack={navigateToHome} 
+            onGoToServices={() => {
+              navigateToHome();
+              setTimeout(() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' }), 100);
+            }} 
+          />
+          <Footer onOpenPrivacy={navigateToPrivacy} onSelectService={navigateToService} onSelectAtuacao={navigateToTaxManagement} />
           <AIAssistant />
         </>
       )}
@@ -59,7 +82,6 @@ function App() {
           serviceId={selectedServiceId} 
           onBack={() => {
             navigateToHome();
-            // Pequeno delay para permitir que o scroll para o topo aconteça antes de tentar ir para a seção
             setTimeout(() => {
               document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
             }, 100);
